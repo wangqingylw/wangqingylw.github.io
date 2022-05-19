@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>iOS Crash 符号化解析 | ckqing.home</title>
+  
+    <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>iOS Crash 符号化解析</h1>
+    </header>
+
+    <section>
+      <p>在公司的时候，通常 Crash 平台都做的很好，帮我们做好了符号化解析，一些三方平台也会提供类似的能力。</p>
+<p>但我们还是会遇到需要自己做符号化解析的场景，比如某些线下包没有解析成功，又比如离开了公司提供的环境的时候等等。</p>
+<p>所以我们还是有必要了解如何做符号化解析。</p>
+<span id="more"></span>
+
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>先准备好<strong>原始崩溃栈</strong>和符号表文件 <code>xxx.dSYM</code>。</p>
+<p>另：有关对应关系，可以通过崩溃日志的<code>Binary Images</code>看到架构和<code>UUID</code>，检查<code>UUID</code>和<code>dSYM</code>是否一致。</p>
+<p>我们通常看到的崩溃栈的每行如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">11 XXXAPP 0x00000001001e7ff4 0x100078000 + 1507316</span><br><span class="line">12 XXXAPP 0x00000001001e7ff4 0x100078000 + 1507316</span><br></pre></td></tr></table></figure>
+
+<p>先明确下后3列的含义，分别是 <code>运行时地址</code>、<code>运行时基地址</code>、<code>崩溃处距离进程起始地址的偏移量</code></p>
+<p>3者的关系是 <code>运行时地址</code> &#x3D; <code>运行时基地址</code>+ <code>偏移量</code></p>
+<p>留意前2个是16进制，偏移量是10进制，做运算时要注意，如上文中的：<br>  <code>0x00000001001e7ff4</code> &#x3D; <code>0x100078000</code> + <code>1507316(0x16FFF4)</code></p>
+<p>虚拟内存偏移量，拿到符号表<strong>TEXT段</strong>的起始地址，再加上<strong>偏移量</strong>，就能得到符号表中的堆栈地址：<br>  <code>符号表堆栈地址</code> &#x3D; <code>符号表基地址</code> + <code>偏移量</code></p>
+<p>符号表TEXT段起始地址获取方式：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">otool -l xxx.dSYM/Contents/Resources/DWARF/xxx</span></span><br><span class="line"></span><br><span class="line">     ...</span><br><span class="line">Load command 3</span><br><span class="line">      cmd LC_SEGMENT</span><br><span class="line">  cmdsize 736</span><br><span class="line">  segname __TEXT</span><br><span class="line">   vmaddr 0x00004000</span><br><span class="line">   vmsize 0x00c3c000</span><br><span class="line">  fileoff 0</span><br><span class="line"> filesize 0</span><br><span class="line">  maxprot 0x00000005</span><br><span class="line"> initprot 0x00000005</span><br><span class="line">   nsects 10</span><br><span class="line">    flags 0x0</span><br><span class="line">     ...</span><br><span class="line">Load command 3</span><br><span class="line">      cmd LC_SEGMENT_64</span><br><span class="line">  cmdsize 952</span><br><span class="line">  segname __TEXT</span><br><span class="line">   vmaddr 0x0000000100000000</span><br><span class="line">   vmsize 0x0000000000d94000</span><br><span class="line">  fileoff 0</span><br><span class="line"> filesize 0</span><br><span class="line">  maxprot 0x00000005</span><br><span class="line"> initprot 0x00000005</span><br><span class="line">   nsects 11</span><br><span class="line">    flags 0x0</span><br><span class="line">     ...</span><br></pre></td></tr></table></figure>
+
+<p>留意，这里也区分了架构，留意崩溃所发生的架构：<code>armv7</code> 对应 <code>LC_SEGMENT</code>，<code>arm64</code> 对应 <code>LC_SEGMENT_64</code>。而 <code>vmaddr</code> 部分就是我们要的符号表基地址。<br>所以我们有时候在网上看到教程里提到让我们用 <code>0x0000000100000000</code> 做计算，原因就在这里。</p>
+<h2 id="单行解析"><a href="#单行解析" class="headerlink" title="单行解析"></a>单行解析</h2><p>常见的有两种方案：</p>
+<h3 id="dwarfdump"><a href="#dwarfdump" class="headerlink" title="dwarfdump"></a>dwarfdump</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">export</span> dSYMPath=<span class="string">&quot;<span class="subst">$(find ~/Library/Developer/Xcode -iname &#x27;*.dSYM&#x27; -print0 | xargs -0 dwarfdump -u | grep 62304F1D-278A-489D-B66E-77199CDDDD4B | sed -E &#x27;s/^[^/]+//&#x27; | head -n 1)</span>&quot;</span>;</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">dwarfdump --<span class="built_in">arch</span>=armv7 --lookup 0x1001e7ff4 <span class="string">&quot;<span class="variable">$dSYMPath</span>&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>这段代码其实是很多三方平台里会自动提示给你的，简单来说就是使用 <code>dwarfdump</code> 命令。其中 <code>grep</code> 的就是 <code>UUID</code>，第1行目的是得到 <code>dSYMP</code> 的路径。</p>
+<p><code>--arch</code> 对应架构，<code>--lookup</code> 后面的就是我们要计算的对应符号表的位置，即：<code>符号表堆栈地址</code> &#x3D; <code>符号表基地址</code> + <code>偏移量</code><br>假如是 <code>arm64</code>，则这个计算就是：<code>0x0000000100000000</code> + <code>1507316</code> &#x3D; <code>0x10016FFF4</code></p>
+<h3 id="atos"><a href="#atos" class="headerlink" title="atos"></a>atos</h3><p>还有一种方案是使用 <code>atos</code> 命令，而这个命令提供了2种方式。</p>
+<p>第1种和 <code>dwarfdump</code> 类似，需要预先计算出符号表偏移量，计算方式同上。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">xcrun atos -o xxx.dSYM/Contents/Resources/DWARF/xxx -<span class="built_in">arch</span> armv7 0x98040</span></span><br></pre></td></tr></table></figure>
+
+<p>第2种则不用我们自己自己计算。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ xcrun atos -o xxx.dSYM/Contents/Resources/DWARF/xxx -l 0x100078000 0x00000001001e7ff4 -arch arm64</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>-l</code> 指定的是代码 <code>运行时基地址</code>，即崩溃栈的 <code>+</code> 前面的地址，后面跟着的是崩溃发生的 <code>运行时地址</code>，即崩溃栈显示的第1个地址。</p>
+<h2 id="整体解析"><a href="#整体解析" class="headerlink" title="整体解析"></a>整体解析</h2><h3 id="symbolicatecrash"><a href="#symbolicatecrash" class="headerlink" title="symbolicatecrash"></a>symbolicatecrash</h3><p>事实上，单行解析效率不高，很多时候，可能更多的是整个 crash 文件解析，我们可以使用 <code>Xcode</code> 提供的 <code>symbolicatecrash</code> 工具。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">export</span> DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">symbolicatecrash ./*.crash ./*.app.dSYM&gt;symbol.crash</span></span><br></pre></td></tr></table></figure>
+
+<p><code>symbolicatecrash</code> 命令的2个入参，分别是 <code>crash</code> 文件和 <code>dSYM</code>。</p>
+<p>留意：</p>
+<ul>
+<li><p><code>symbolicatecrash</code> 需要完整的路径，<code>/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash</code></p>
+</li>
+<li><p>第1行 <code>export DEVELOPER_DIR</code>，一般情况下是需要的，否则会出现如下报错：</p>
+  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error: &quot;DEVELOPER_DIR&quot; is not defined at ./symbolicatecrash line xx</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>本文仅仅介绍了<strong>工具使用相关的</strong>技巧，有关符号化更深层次的含义、一些<strong>系统库</strong>一般不容易符号化的场景如何处理、<code>Swift</code>和<code>C++</code>的场景又会遇到哪些问题，本文没有详细描述。</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2022-05-18T17:53:08.000Z" itemprop="datePublished">
+              2022-05-19
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Crash/">Crash</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>
