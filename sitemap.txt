@@ -1,3 +1,4 @@
+https://www.ckqing.com/about/index.html
 https://www.ckqing.com/2022/05/19/ios-crash-ana/
 https://www.ckqing.com/2019/06/30/ios-cer/
 https://www.ckqing.com/2019/02/20/swift-defer-inout/
@@ -5,7 +6,6 @@ https://www.ckqing.com/2021/05/18/vscode-shortcut/
 https://www.ckqing.com/2022/05/10/jp-wake/
 https://www.ckqing.com/about/contact.html
 https://www.ckqing.com/about/contactbak.html
-https://www.ckqing.com/about/index.html
 https://www.ckqing.com/qminesweeper/privacy-policy.html
 https://www.ckqing.com/categories/index.html
 https://www.ckqing.com/tags/index.html
