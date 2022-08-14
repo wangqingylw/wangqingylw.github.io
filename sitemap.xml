@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.ckqing.com/qsolvesudoku/privacy-policy.html</loc>
+    
+    <lastmod>2022-08-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.ckqing.com/about/index.html</loc>
     
     <lastmod>2022-05-20</lastmod>
@@ -103,7 +112,7 @@
 
   <url>
     <loc>https://www.ckqing.com/</loc>
-    <lastmod>2022-05-20</lastmod>
+    <lastmod>2022-08-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -111,42 +120,42 @@
   
   <url>
     <loc>https://www.ckqing.com/tags/iOS/</loc>
-    <lastmod>2022-05-20</lastmod>
+    <lastmod>2022-08-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/certificate/</loc>
-    <lastmod>2022-05-20</lastmod>
+    <lastmod>2022-08-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/Crash/</loc>
-    <lastmod>2022-05-20</lastmod>
+    <lastmod>2022-08-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/%E6%97%A5%E6%9C%AC%E8%AA%9E/</loc>
-    <lastmod>2022-05-20</lastmod>
+    <lastmod>2022-08-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/Swift/</loc>
-    <lastmod>2022-05-20</lastmod>
+    <lastmod>2022-08-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/vscode/</loc>
-    <lastmod>2022-05-20</lastmod>
+    <lastmod>2022-08-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -155,21 +164,21 @@
   
   <url>
     <loc>https://www.ckqing.com/categories/tech/</loc>
-    <lastmod>2022-05-20</lastmod>
+    <lastmod>2022-08-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/categories/Language-learning/</loc>
-    <lastmod>2022-05-20</lastmod>
+    <lastmod>2022-08-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/categories/tech/iOS/</loc>
-    <lastmod>2022-05-20</lastmod>
+    <lastmod>2022-08-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
