@@ -261,6 +261,7 @@
         <div id="gitalk-container"></div>
 
         <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
           var gitalk = new Gitalk({
             clientID: '80bb2fb75b60505d4c6d',
             clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
@@ -268,7 +269,9 @@
             owner: 'wangqingylw', // github 用户名
             admin: ["wangqingylw"], // github 用户名
             perPage: 20,
-            id: window.location.pathname.slice(0, 50), // 查找 issus 的条件
+            id: '/2019/02/20/swift-defer-inout/', // 查找 issus 的条件
+            title: '浅谈当Swift中defer和inout同时起作用',
+            body: 'https://www.ckqing.com/2019/02/20/swift-defer-inout/ 浅谈当Swift中defer和inout同时起作用'
           });
           gitalk.render("gitalk-container");
         </script>
