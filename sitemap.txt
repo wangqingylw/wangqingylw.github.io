@@ -1,3 +1,4 @@
+https://www.ckqing.com/2022/08/31/hexo-comments-mismatch/
 https://www.ckqing.com/about/index.html
 https://www.ckqing.com/qsolvesudoku/privacy-policy.html
 https://www.ckqing.com/qminesweeper/privacy-policy.html
@@ -17,6 +18,9 @@ https://www.ckqing.com/tags/Crash/
 https://www.ckqing.com/tags/%E6%97%A5%E6%9C%AC%E8%AA%9E/
 https://www.ckqing.com/tags/Swift/
 https://www.ckqing.com/tags/vscode/
+https://www.ckqing.com/tags/hexo/
+https://www.ckqing.com/tags/ejs/
 https://www.ckqing.com/categories/tech/
 https://www.ckqing.com/categories/Language-learning/
 https://www.ckqing.com/categories/tech/iOS/
+https://www.ckqing.com/categories/tech/hexo/
