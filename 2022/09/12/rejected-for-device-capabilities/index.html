@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>日语学习-わけ | ckqing.home</title>
+  <title>When Rejected For UIRequiredDeviceCapabilities | ckqing.home</title>
   
     <link rel="icon" href="/assets/favicon.jpeg">
   
@@ -113,75 +113,30 @@
             <div>
   <article class='ContentView'>
     <header class='PageTitle'>
-        <h1>日语学习-わけ</h1>
+        <h1>When Rejected For UIRequiredDeviceCapabilities</h1>
     </header>
 
     <section>
-      <p>わけ（訳）：道理、理由、原因<br>言い訳：借口</p>
+      <p>A month ago, after I submitted the AppStore review as usual. Soon I received a review response with the subject line “We noticed an issue with your submission.”</p>
+<p>I guess I may have screwed up again.</p>
+<p>The reason for rejection is about <code>UIRequiredDeviceCapabilities</code>.</p>
 <span id="more"></span>
 
-<h3 id="わけだ"><a href="#わけだ" class="headerlink" title="わけだ"></a>わけだ</h3><ul>
-<li>例文：<ul>
-<li>A：彼はアメリカに三年間留学していたそうだ。</li>
-<li>B：だから英語が上手なわけですね。</li>
-</ul>
-</li>
-<li>中文说明：<ul>
-<li>英文很厉害的 <strong>理由&#x2F;道理</strong></li>
-<li><strong>难怪</strong>……，前面放结果</li>
-</ul>
-</li>
-</ul>
-<h3 id="〜わけがない"><a href="#〜わけがない" class="headerlink" title="〜わけがない"></a>〜わけがない</h3><ul>
-<li>接続：〜＝動詞・イ形容詞・ナ形容詞・名詞の普通形</li>
-<li>意味：〜は全く考えられない。〜の可能性は0％だ。〜になる根拠がない</li>
-</ul>
-<h3 id="〜わけではない-x2F-わけじゃない"><a href="#〜わけではない-x2F-わけじゃない" class="headerlink" title="〜わけではない &#x2F; わけじゃない"></a>〜わけではない &#x2F; わけじゃない</h3><ul>
-<li>接続：〜&#x3D;動詞・イ形容詞・ナ形容詞・名詞の普通形</li>
-<li>意味：100％〜ではない<ul>
-<li>あきらめるわけではないけど、ちょっと厳しいかな…</li>
-<li>それは違いますよ、とはっきり言わない表現。</li>
-</ul>
-</li>
-<li>中文说明：并不是完全的xx，并不是彻底的xx，并非100%xx。<strong>并非</strong>（是这样道理……）否定前面的句子</li>
-</ul>
-<h3 id="〜わけにはいかない"><a href="#〜わけにはいかない" class="headerlink" title="〜わけにはいかない"></a>〜わけにはいかない</h3><ul>
-<li>接続：〜＝動詞の辞書形、ない形</li>
-<li>意味：〜ができない。<ul>
-<li>したい気持ちはあるけど、社会や他の人から許さない</li>
-</ul>
-</li>
-<li>中文说明：如果因个人原因不能，如因过敏不能喝酒，则不能用该语法。需是社会、他人不允许的角度出发才可。</li>
-</ul>
-<h3 id="〜ないわけがない"><a href="#〜ないわけがない" class="headerlink" title="〜ないわけがない"></a>〜ないわけがない</h3><ul>
-<li>接続：〜&#x3D;動詞・イ形容詞・ナ形容詞・名詞</li>
-<li>意味：〜にならない根拠がない<ul>
-<li>100％〜だ</li>
-</ul>
-</li>
-<li>例文：あのお店のケーキ、美味しくないわけがない。→100％美味しい</li>
-</ul>
-<h3 id="〜ないわけではない"><a href="#〜ないわけではない" class="headerlink" title="〜ないわけではない"></a>〜ないわけではない</h3><ul>
-<li>接続：〜&#x3D;動詞・イ形容詞・ナ形容詞・名詞</li>
-<li>意味：0％〜ではない<ul>
-<li>行きたくないわけではない。→行きたい気持ちは0％ではない。（10％？）</li>
-</ul>
-</li>
-<li>中文说明：并不是完全不xx。与之前的 “わけではない” 相比：<ul>
-<li>わけではない：并不是完全xx。 其实想说的是，否定的部分。</li>
-<li>ないわけではない：并不是完全不xx。其实想说的是，肯定的部分。</li>
-</ul>
-</li>
-</ul>
-<h3 id="〜ないわけにはいかない"><a href="#〜ないわけにはいかない" class="headerlink" title="〜ないわけにはいかない"></a>〜ないわけにはいかない</h3><ul>
-<li>接続：〜＝動詞の辞書形</li>
-<li>意味：〜しなければならない。<ul>
-<li>ポイント：するの当然だ。</li>
-</ul>
-</li>
-<li>中文说明：必须、一定xxx。之前的语法里，动词使用ない则变成这个语法</li>
-<li>例文：ケーキ屋に行かない訳にはいかない→行かなければならない。</li>
-</ul>
+<p>The text of the email is as follows:</p>
+<blockquote>
+<p>Guideline 2.3 - Performance - Accurate Metadata<br>We were unable to install the app on iPhone. The <code>UIRequiredDeviceCapabilities</code> key in the Info.plist is set in such a way that the app will not install on iPhone .</p>
+<p>Next Steps<br>To resolve this issue, please check the <code>UIRequiredDeviceCapabilities</code> key to verify that it contains only the attributes required for your app features or the attributes that must not be present on the device. Attributes specified by a dictionary should be set to true if they are required and false if they must not be present on the device.</p>
+<p>Resources<br>Please review the <a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/qa/qa1397/_index.html">Technical Q&amp;A 1397: Understanding the UIRequiredDeviceCapabilities key</a> for information on the <code>UIRequiredDeviceCapabilities</code> key.<br>You may also wish to review the dictionary keys table in the <a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/ExpectedAppBehaviors/ExpectedAppBehaviors.html#//apple_ref/doc/uid/TP40007072-CH3-SW5">“Declaring the Required Device Capabilities”</a> section of the App Programming Guide for iOS.</p>
+</blockquote>
+<p>In conclusion, I did not set UIRequiredDeviceCapabilities in info.plist.</p>
+<p>So I reply to the reviewers as follows:</p>
+<blockquote>
+<p>Sorry, but I tried to find out that I can install the submitted build from Testflight on the iPhone. I don’t have UIRequiredDeviceCapabilities as the key configuration in the info.plist file.<br>Please try again to see if it can be successfully installed, or provide the device model and system version that cannot be installed, thank you very much.</p>
+</blockquote>
+<p>Shortly after my reply, Apple replied to me, and the review <strong>continued</strong>. Although there are other issues after that, not related to <code>UIRequiredDeviceCapabilities</code>.</p>
+<p>In conclusion, if you receive emails like this. But you have confirmed that there are no related settings aboout <code>UIRequiredDeviceCapabilities</code> in info.list, so it is most likely a problem on the Apple side. <strong>Simply reply</strong> to confirm that there is no such setting.</p>
+<p>Here’s some official <a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/bundleresources/information_property_list/uirequireddevicecapabilities">documentation</a> on <code>UIRequiredDeviceCapabilities</code>.</p>
+<p>On the other hand, if you really need to make some restrictions on the devices that can be installed, you may need to learn more about the configuration of <code>UIRequiredDeviceCapabilities</code>.</p>
 
 
       
@@ -191,15 +146,19 @@
       <section class='ArticleMeta'>
           <div>
             发布于&nbsp;
-            <time datetime="2022-05-10T04:37:03.000Z" itemprop="datePublished">
-              2022-05-10
+            <time datetime="2022-09-12T05:19:18.000Z" itemprop="datePublished">
+              2022-09-12
             </time>
           </div>
           
             <div>
               tags: 
   <li class="meta-text">
-  { <a href="/tags/%E6%97%A5%E6%9C%AC%E8%AA%9E/">日本語</a> }
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/review/">review</a> }
   </li>
 
 
@@ -225,9 +184,9 @@
             owner: 'wangqingylw', // github 用户名
             admin: ["wangqingylw"], // github 用户名
             perPage: 20,
-            id: '/2022/05/10/jp-wake/', // 查找 issus 的条件
-            title: '日语学习-わけ',
-            body: 'https://www.ckqing.com/2022/05/10/jp-wake/ 日语学习-わけ'
+            id: '/2022/09/12/rejected-for-device-capabilities/', // 查找 issus 的条件
+            title: 'When Rejected For UIRequiredDeviceCapabilities',
+            body: 'https://www.ckqing.com/2022/09/12/rejected-for-device-capabilities/ When Rejected For UIRequiredDeviceCapabilities'
           });
           gitalk.render("gitalk-container");
         </script>

@@ -1,3 +1,5 @@
+https://www.ckqing.com/2022/09/18/static-var-in-header/
+https://www.ckqing.com/2022/09/12/rejected-for-device-capabilities/
 https://www.ckqing.com/2022/08/31/hexo-comments-mismatch/
 https://www.ckqing.com/about/index.html
 https://www.ckqing.com/qsolvesudoku/privacy-policy.html
@@ -20,6 +22,9 @@ https://www.ckqing.com/tags/Swift/
 https://www.ckqing.com/tags/vscode/
 https://www.ckqing.com/tags/hexo/
 https://www.ckqing.com/tags/ejs/
+https://www.ckqing.com/tags/review/
+https://www.ckqing.com/tags/Objective-C/
+https://www.ckqing.com/tags/C/
 https://www.ckqing.com/categories/tech/
 https://www.ckqing.com/categories/Language-learning/
 https://www.ckqing.com/categories/tech/iOS/

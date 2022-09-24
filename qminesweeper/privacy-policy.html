@@ -36,6 +36,16 @@
 
     gtag('config', 'G-43E779BM0G');
   </script>
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
 <meta name="generator" content="Hexo 6.2.0"></head>
 
 <body>
@@ -49,7 +59,7 @@
         <div>ckqing.home</div>
         
         
-            <div>Wang Qing</div>
+            <div>Wang Qing | iOSer</div>
         
         <ul>
           
@@ -227,12 +237,21 @@
 
     <!-- gitalk -->
     
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
 </article>
 
 </div>
 
             <footer>
-    <div>© 2022 - Wang Qing </div>
+    <div>© 2022 - Wang Qing | iOSer </div>
     <div>
         <span>
             Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
