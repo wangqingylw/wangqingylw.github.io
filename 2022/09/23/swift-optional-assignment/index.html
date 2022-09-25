@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Something About Optional Assignment | ckqing.home</title>
+  
+    <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing | iOSer</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Something About Optional Assignment</h1>
+    </header>
+
+    <section>
+      <p>We all know that in <code>Swift</code>, <code>optional chaining</code> is an important feature that can help us write concise and elegant code.</p>
+<p>However, the <code>optional assignment</code> derived from the optional chain may have some strange phenomena when used.</p>
+<span id="more"></span>
+
+<blockquote>
+<p>The following discussion and code are based on <code>Swift5.7</code></p>
+</blockquote>
+<p>We often use optional chaining for value or assignment in code, such as</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> residence: <span class="type">Residence</span>?</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Residence</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> numberOfRooms <span class="operator">=</span> <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person <span class="operator">=</span> <span class="type">Person</span>()</span><br><span class="line"></span><br><span class="line">person.residence<span class="operator">?</span>.numberOfRooms     <span class="comment">// =&gt; nil, nothing happened</span></span><br><span class="line">person.residence<span class="operator">?</span>.numberOfRooms <span class="operator">=</span> <span class="number">2</span> <span class="comment">// =&gt; nothing happened</span></span><br></pre></td></tr></table></figure>
+
+<p>In the <a target="_blank" rel="noopener" href="https://docs.swift.org/swift-book/LanguageGuide/OptionalChaining.html">Swift documentation</a> it is described as follows</p>
+<blockquote>
+<p>Optional chaining is a process for querying and calling properties, methods, and subscripts on an optional that might currently be nil.<br>If the optional <strong>contains a value</strong>, the property, method, or subscript <strong>call succeeds</strong>;<br>if the optional <strong>is nil</strong>, the property, method, or subscript <strong>call returns nil</strong>.<br>Multiple queries can be chained together, and the entire chain fails gracefully if any link in the chain is nil.</p>
+</blockquote>
+<p>Optional chaining can actually be used in <code>assignment</code> operations, such as</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> someThing: <span class="type">String</span>?</span><br><span class="line"></span><br><span class="line">someThing<span class="operator">?</span> <span class="operator">=</span> <span class="string">&quot;x&quot;</span> <span class="comment">// =&gt; nil, nothing happened</span></span><br><span class="line">someThing <span class="operator">=</span> <span class="string">&quot;x&quot;</span>  <span class="comment">// =&gt; x</span></span><br></pre></td></tr></table></figure>
+
+<p>If it is nil, the assignment operation will <strong>not be performed</strong>, and nil will be returned.</p>
+<p>In some cases, it may play a role.</p>
+<p>But when there are <code>multiple optional</code> types, things get a little more complicated.</p>
+<p>Multiple optional types are not as rare as you might think, such as</p>
+<p>Sometimes when you want to leave some <strong>placeholder</strong> keys in the dictionary, you may write like this.</p>
+<blockquote>
+<p>Of course, I personally don’t recommend such a design type</p>
+</blockquote>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> sth: [<span class="type">String</span>: <span class="type">String</span>?] <span class="operator">=</span> [<span class="string">&quot;x&quot;</span>: <span class="string">&quot;y&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(sth[<span class="string">&quot;x&quot;</span>]) <span class="comment">// =&gt; Optional(Optional(&quot;y&quot;))</span></span><br></pre></td></tr></table></figure>
+
+<p>At this point, optional assignment may have some ambiguous things happen</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sth[<span class="string">&quot;x&quot;</span>] <span class="operator">=</span> <span class="literal">nil</span></span><br><span class="line"><span class="built_in">print</span>(sth)      <span class="comment">// =&gt; [:]</span></span><br><span class="line"><span class="built_in">print</span>(sth[<span class="string">&quot;x&quot;</span>]) <span class="comment">// =&gt; nil</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// but if</span></span><br><span class="line">sth[<span class="string">&quot;x&quot;</span>]<span class="operator">?</span> <span class="operator">=</span> <span class="literal">nil</span></span><br><span class="line"><span class="built_in">print</span>(sth)      <span class="comment">// =&gt; [&quot;x&quot;: nil]</span></span><br><span class="line"><span class="built_in">print</span>(sth[<span class="string">&quot;x&quot;</span>]) <span class="comment">// =&gt; Optional(nil)</span></span><br></pre></td></tr></table></figure>
+
+<p>So what actually happens is something like</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> sth[<span class="string">&quot;x&quot;</span>] <span class="operator">!=</span> <span class="literal">nil</span> &#123;</span><br><span class="line">  sth[<span class="string">&quot;x&quot;</span>] <span class="operator">=</span> .some(<span class="literal">nil</span>)</span><br><span class="line">  <span class="comment">// not =&gt; sth[&quot;x&quot;] = nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>We will find a similar phenomenon when we reduce directly to double optional types</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> tt: <span class="type">String</span>?? <span class="operator">=</span> <span class="literal">nil</span></span><br><span class="line">tt<span class="operator">?</span> <span class="operator">=</span> <span class="string">&quot;a&quot;</span> <span class="comment">// =&gt; nil, nothing happened</span></span><br><span class="line">tt <span class="operator">=</span> <span class="string">&quot;b&quot;</span>  <span class="comment">// =&gt; Optional(Optional(&quot;b&quot;))</span></span><br><span class="line">tt<span class="operator">?</span> <span class="operator">=</span> <span class="literal">nil</span> <span class="comment">// =&gt; Optional(nil)</span></span><br><span class="line">tt <span class="operator">=</span> <span class="literal">nil</span>  <span class="comment">// =&gt; nil</span></span><br></pre></td></tr></table></figure>
+
+<p>To sum up, <code>optional assignment</code> is an operation that may be useful in some scenarios, but be sure to evaluate the possible <strong>risks</strong> when using it.</p>
+<p><code>Multiple optional</code> types may bring unexpected performance, which is related to the underlying implementation of Swift’s implicit wrapping, unwrapping, etc., and needs to be used with <strong>caution</strong>.</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2022-09-23T07:20:05.000Z" itemprop="datePublished">
+              2022-09-23
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Swift/">Swift</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2022/09/23/swift-optional-assignment/', // 查找 issus 的条件
+            title: 'Something About Optional Assignment',
+            body: 'https://www.ckqing.com/2022/09/23/swift-optional-assignment/ Something About Optional Assignment'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing | iOSer </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>
