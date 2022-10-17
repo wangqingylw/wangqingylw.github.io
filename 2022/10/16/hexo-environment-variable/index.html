@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="hexo,ejs,env">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Hexo Environment Variables | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Hexo Environment Variables</h1>
+    </header>
+
+    <section>
+      <p>When we debug <strong>Hexo</strong>, we always encounter scenarios where we need to <strong>block</strong> some production environment logic. Such as some of Google’s JS libraries and so on.</p>
+<p>So we need some way to distinguish debug environment, production environment, etc. What we probably need are <strong>environment variables</strong>.</p>
+<span id="more"></span>
+
+<p>In fact, Hexo also supports environment variables. Here are some ways to use them.</p>
+<p>For example, we need an environment variable <code>wqdebug</code> to distinguish whether it is an <strong>offline</strong> environment or a <strong>production</strong> environment.</p>
+<p>We can start Hexo like this</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo s debug --wqdebug 1</span><br></pre></td></tr></table></figure>
+
+<p>We can print environment variable information like this</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> test = &lt;%- <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(env) %&gt;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The resulting value is</span></span><br><span class="line"><span class="keyword">const</span> test = &#123;<span class="string">&quot;args&quot;</span>:&#123;<span class="string">&quot;_&quot;</span>:[],<span class="string">&quot;wqdebug&quot;</span>:<span class="number">1</span>&#125;,<span class="string">&quot;debug&quot;</span>:<span class="literal">false</span>,<span class="string">&quot;safe&quot;</span>:<span class="literal">false</span>,<span class="string">&quot;silent&quot;</span>:<span class="literal">false</span>,<span class="string">&quot;env&quot;</span>:<span class="string">&quot;development&quot;</span>,<span class="string">&quot;version&quot;</span>:<span class="string">&quot;6.2.0&quot;</span>,<span class="string">&quot;cmd&quot;</span>:<span class="string">&quot;s&quot;</span>,<span class="string">&quot;init&quot;</span>:<span class="literal">true</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>So we can use this environment variable like this</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;% <span class="keyword">if</span> (!env.<span class="property">args</span>[<span class="string">&quot;wqdebug&quot;</span>]) &#123; %&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br></pre></td></tr></table></figure>
+
+<p>In addition, you may have noticed that Hexo’s own environment variables actually contain <code>&quot;env&quot;:&quot;development&quot;</code> related information.</p>
+<p>You can also use this environment variable directly. </p>
+<p>Of course, you can also inject environment variables according to your needs, which will be more flexible.</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2022-10-16T11:12:08.000Z" itemprop="datePublished">
+              2022-10-16
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/hexo/">hexo</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/ejs/">ejs</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/env/">env</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2022/10/16/hexo-environment-variable/', // 查找 issus 的条件
+            title: 'Hexo Environment Variables',
+            body: 'https://www.ckqing.com/2022/10/16/hexo-environment-variable/ Hexo Environment Variables'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>

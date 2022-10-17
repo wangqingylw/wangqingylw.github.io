@@ -1,3 +1,5 @@
+https://www.ckqing.com/2022/10/16/hexo-environment-variable/
+https://www.ckqing.com/2022/10/07/sth-about-rangeOfComposedCharacterSequencesForRange/
 https://www.ckqing.com/2022/09/23/swift-optional-assignment/
 https://www.ckqing.com/2022/08/31/hexo-comments-mismatch/
 https://www.ckqing.com/2022/09/18/static-var-in-header/
@@ -26,6 +28,7 @@ https://www.ckqing.com/tags/ejs/
 https://www.ckqing.com/tags/review/
 https://www.ckqing.com/tags/Objective-C/
 https://www.ckqing.com/tags/C/
+https://www.ckqing.com/tags/env/
 https://www.ckqing.com/categories/tech/
 https://www.ckqing.com/categories/Language-learning/
 https://www.ckqing.com/categories/tech/iOS/

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="iOS,Objective-C">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Sth Abount rangeOfComposedCharacterSequencesForRange | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Sth Abount rangeOfComposedCharacterSequencesForRange</h1>
+    </header>
+
+    <section>
+      <p>The return value of <code>rangeOfComposedCharacterSequencesForRange:</code> is not always as expected. This is most likely a bug in the Apple library.</p>
+<span id="more"></span>
+
+<p>If the input NSRange is <code>&#123;location=0, length=0&#125;</code>, if the string length is greater than 0, it will return <code>&#123;location=0, length=1&#125;</code>, if the string is an empty string, it will return <code>&#123;location=0 , length=0&#125;</code>.</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(lldb) po [<span class="string">@&quot;a&quot;</span> rangeOfComposedCharacterSequencesForRange:<span class="built_in">NSMakeRange</span>(<span class="number">0</span>,<span class="number">0</span>)]</span><br><span class="line">location=<span class="number">0</span>, length=<span class="number">1</span></span><br><span class="line"></span><br><span class="line">(lldb) po [<span class="string">@&quot;&quot;</span> rangeOfComposedCharacterSequencesForRange:<span class="built_in">NSMakeRange</span>(<span class="number">0</span>,<span class="number">0</span>)]</span><br><span class="line">location=<span class="number">0</span>, length=<span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>Sometimes the input parameters are obtained through logical calculation. If you rely on the return value of <code>rangeOfComposedCharacterSequencesForRange:</code> for further logical processing, you need to pay attention to this abnormal scenario.</p>
+<p>This <strong><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/15155913/rangeofcomposedcharactersequencesforrange-transforming-0-character-range-into-1" title="rangeOfComposedCharacterSequencesForRange transforming 0 character range into 1 character range">discussion</a></strong> on <strong>stackoverflow</strong> is also available for reference.</p>
+<p><strong>About NSRange</strong></p>
+<p>Another thing to note is that <code>NSRange</code> must be <strong>initialized</strong> before use.</p>
+<p>NSRange is a structure. When the structure is not initialized, the content is unknown and will not be initialized to 0 by default. Strictly speaking, this should be knowledge of C, not just ObjC.</p>
+<p>For some reason, initialization may be performed according to some conditions, and once initialization is missed, Crash will be caused.</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSRange</span> range;</span><br><span class="line"></span><br><span class="line"><span class="type">BOOL</span> condition = <span class="literal">NO</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// some calculation of conditions</span></span><br><span class="line"><span class="keyword">if</span> (condition) &#123; </span><br><span class="line">  <span class="comment">// sth</span></span><br><span class="line">  range = <span class="built_in">NSMakeRange</span>(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">NSString</span> *str = <span class="string">@&quot;abc&quot;</span>;</span><br><span class="line">  </span><br><span class="line"><span class="comment">// may boom here!</span></span><br><span class="line"><span class="built_in">NSRange</span> subRange = [str rangeOfComposedCharacterSequencesForRange:range]; </span><br></pre></td></tr></table></figure>
+
+<p>Crash information such as</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Terminating app due to uncaught exception &#x27;NSInvalidArgumentException&#x27;, reason: &#x27;The index 4650705487073902592 is invalid&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>Normally, <strong>Xcode</strong> will indicate that the variable is not initialized with a yellow <strong>warning</strong>, such as</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Variable &#x27;range&#x27; is uninitialized when used here</span><br></pre></td></tr></table></figure>
+
+<p>Of course, if you use <code>Swift</code> to code, the compilation will simply fail, which is a better thing.</p>
+<br/>
+
+<p><strong>Reference List:</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/15155913/rangeofcomposedcharactersequencesforrange-transforming-0-character-range-into-1" title="rangeOfComposedCharacterSequencesForRange transforming 0 character range into 1 character range">StackOverflow: rangeOfComposedCharacterSequencesForRange transforming 0 character range into 1 character range</a></li>
+</ul>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2022-10-07T05:19:18.000Z" itemprop="datePublished">
+              2022-10-07
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2022/10/07/sth-about-rangeOfComposedCharacterSequ', // 查找 issus 的条件
+            title: 'Sth Abount rangeOfComposedCharacterSequencesForRange',
+            body: 'https://www.ckqing.com/2022/10/07/sth-about-rangeOfComposedCharacterSequencesForRange/ Sth Abount rangeOfComposedCharacterSequencesForRange'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>
