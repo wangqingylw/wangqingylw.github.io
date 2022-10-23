@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="iOS,Objective-C">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>respondsToSelector Of Super | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>respondsToSelector Of Super</h1>
+    </header>
+
+    <section>
+      <p><code>respondsToSelector</code> is often used to determine whether an instance implements a method for safe calling.</p>
+<p>But please don’t call the <code>respondsToSelector</code> method on <code>super</code>.</p>
+<p>Sometimes we only want to call a method of the parent class, but we only know that although the parent class implements a certain protocol, it does not necessarily implement the method in the protocol.</p>
+<span id="more"></span>
+
+<p><code>[super message]</code> has the following meaning:</p>
+<blockquote>
+<p>When it encounters a method call, the compiler generates a call to one of the functions objc_msgSend, objc_msgSend_stret, objc_msgSendSuper, or objc_msgSendSuper_stret. Messages sent to an object’s superclass (using the super keyword) are sent using objc_msgSendSuper; other messages are sent using objc_msgSend. Methods that have data structures as return values are sent using objc_msgSendSuper_stret and objc_msgSend_stret.</p>
+</blockquote>
+<p>But <code>respondsToSelector</code> is on NSObject, and the internal check logic does not have special processing for <code>super</code>, but only checks the <code>actual calling instance</code>.</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">ProtocolA</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line">- (<span class="type">void</span>)funA;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">A</span> : <span class="title">NSObject</span>&lt;<span class="title">ProtocolA</span>&gt;</span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">A</span></span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">B</span> : <span class="title">A</span></span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">B</span></span></span><br><span class="line">- (<span class="type">void</span>)funA &#123;</span><br><span class="line">  <span class="keyword">if</span> ([<span class="variable language_">super</span> respondsToSelector:<span class="keyword">@selector</span>(funA)]) &#123; <span class="comment">// Bad! always true!</span></span><br><span class="line">      [<span class="variable language_">super</span> funA];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>The <strong>correct</strong> way is to call the <code>instancesRespondToSelector</code> method on the parent class to check.</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="addition">+ if ([A instancesRespondToSelector:@selector(funA)]) &#123; // Good!</span></span><br><span class="line"><span class="deletion">- if ([super respondsToSelector:@selector(funA)]) &#123; // Bad! always true!</span></span><br><span class="line">  [super funA];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>There may be an idea whether it is possible to use <code>[super class]</code> to replace <code>A</code>?</p>
+<p>Unfortunately this is another <strong>mistake</strong>, the correct way to do it is <code>[self superclass]</code>。</p>
+<p>The reason is exactly the same as described earlier.</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(lldb) po [<span class="variable language_">super</span> <span class="keyword">class</span>]</span><br><span class="line">B</span><br><span class="line"></span><br><span class="line">(lldb) po [<span class="keyword">self</span> superclass]</span><br><span class="line">A</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="addition">+ if ([[self superclass] instancesRespondToSelector:@selector(funA)]) &#123; // Good!</span></span><br><span class="line"><span class="addition">+ if ([A instancesRespondToSelector:@selector(funA)]) &#123; // Good!</span></span><br><span class="line"><span class="deletion">- if ([[super class] instancesRespondToSelector:@selector(funA)]) &#123; // Bad!</span></span><br><span class="line"><span class="deletion">- if ([super respondsToSelector:@selector(funA)]) &#123; // Bad! always true!</span></span><br><span class="line">  [super funA];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2022-10-20T04:14:02.000Z" itemprop="datePublished">
+              2022-10-20
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2022/10/20/respondsToSelector-of-super/', // 查找 issus 的条件
+            title: 'respondsToSelector Of Super',
+            body: 'https://www.ckqing.com/2022/10/20/respondsToSelector-of-super/ respondsToSelector Of Super'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>

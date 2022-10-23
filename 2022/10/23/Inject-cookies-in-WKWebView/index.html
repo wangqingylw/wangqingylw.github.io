@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="iOS,Objective-C,WKWebView">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Inject cookies in WKWebView | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Inject cookies in WKWebView</h1>
+    </header>
+
+    <section>
+      <p>We often encounter scenarios where we need to inject cookies into <code>WKWebView</code> from the outside.</p>
+<p>There are several specific schemes, generally speaking, the choice needs to be made in combination with the actual scene.</p>
+<p>Here is a description of an actual scenario in a project I’ve encountered.</p>
+<span id="more"></span>
+
+<p>The background is that for some reason, we need to transform a piece of JS logic into Native logic.</p>
+<p>The JS logic is to first request an API, and the response header of the API will have a <code>Set-Cookie</code> field and return a jump link. </p>
+<p>After that, JS will jump to this link, because the two links are in the same domain, so no additional processing is required.</p>
+<p>The logic of Native is outside the webview, requesting the API, and manually processing the <code>Set-Cookie</code> and jump logic in the response header. The question is how to handle Set-Cookie more securely.</p>
+<p>Here is the direct conclusion.</p>
+<p>The solution we adopt is to inject Cookies in <strong>two ways</strong> at the same time.</p>
+<ol>
+<li>Add <code>Set-Cookie</code> content in the request of <code>loadRequest:</code> to solve the Cookies required by <strong>SSR (Server-Side Rendering)</strong>.</li>
+<li>Add the <code>userScript</code> that injects Cookies in WKWebView’s <code>configuration.userContentController</code>. In order to solve the problem of using cookies in the current page and in the <strong>secondary</strong> page.</li>
+</ol>
+<p>The following is some pseudo code for reference.</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)dealWithWebView:(<span class="built_in">WKWebView</span> *)webView</span><br><span class="line">               response:(<span class="built_in">NSHTTPURLResponse</span> *)response &#123;</span><br><span class="line">    </span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// cookeis of resposne</span></span><br><span class="line">  <span class="built_in">NSArray</span>&lt;<span class="built_in">NSHTTPCookie</span> *&gt; *cookies = [<span class="built_in">NSHTTPCookie</span> cookiesWithResponseHeaderFields:response.allHeaderFields forURL:response.URL];</span><br><span class="line">  cookies = [<span class="keyword">self</span> reduceCookiesForDomain:url.host cookies:cookies];</span><br><span class="line"></span><br><span class="line">  <span class="comment">// get url to redirect</span></span><br><span class="line">  <span class="built_in">NSURL</span> *url = [<span class="keyword">self</span> redirectUrlFromResponse:response];</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">NSMutableURLRequest</span> *request = [<span class="built_in">NSMutableURLRequest</span> requestWithURL:url];</span><br><span class="line">  <span class="keyword">if</span> (cookies.count) &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *cookiesStr = [[<span class="built_in">NSHTTPCookie</span> requestHeaderFieldsWithCookies:cookies] objectForKey:<span class="string">@&quot;Cookie&quot;</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1. do with request</span></span><br><span class="line">    <span class="keyword">if</span> (cookiesStr.length) &#123;</span><br><span class="line">      [request addValue:cookiesStr forHTTPHeaderField:<span class="string">@&quot;Cookie&quot;</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. do with userScript</span></span><br><span class="line">    <span class="comment">// injectTime is WKUserScriptInjectionTimeAtDocumentStart</span></span><br><span class="line">    <span class="built_in">NSString</span> *cookiesSetStr = [<span class="keyword">self</span> cookiesSetStringForCookies:cookies];</span><br><span class="line">    <span class="built_in">WKUserScript</span> *userScript = [[<span class="built_in">WKUserScript</span> alloc] initWithSource:cookiesSetStr injectionTime:<span class="built_in">WKUserScriptInjectionTimeAtDocumentStart</span> forMainFrameOnly:<span class="literal">NO</span>];</span><br><span class="line">    [webView.configuration.userContentController addUserScript: userScript];</span><br><span class="line">  &#125; </span><br><span class="line">    </span><br><span class="line">  [<span class="keyword">self</span>.webView loadRequest::request];</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// MARK: - some tools</span></span><br><span class="line">- (<span class="built_in">NSArray</span>&lt;<span class="built_in">NSHTTPCookie</span> *&gt; *)reduceCookiesForDomain:(<span class="built_in">NSString</span> *)domain cookies:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSHTTPCookie</span> *&gt; *)cookies &#123;</span><br><span class="line">  <span class="built_in">NSMutableArray</span> *newCookies = [@[] mutableCopy];</span><br><span class="line">  <span class="built_in">NSMutableSet</span>&lt;<span class="built_in">NSString</span> *&gt; *names = [<span class="built_in">NSMutableSet</span> set];</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">NSString</span> *domainWithDotPrefix = [domain hasPrefix:<span class="string">@&quot;.&quot;</span>]</span><br><span class="line">    ? domain</span><br><span class="line">    : [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;.%@&quot;</span>,domain?:<span class="string">@&quot;&quot;</span>];</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">for</span> (<span class="built_in">NSHTTPCookie</span> *cookie <span class="keyword">in</span> cookies) &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *name = cookie.name;</span><br><span class="line">    <span class="keyword">if</span> ([name rangeOfString:<span class="string">@&quot;&#x27;&quot;</span>].location != <span class="built_in">NSNotFound</span>) &#123; <span class="keyword">continue</span>; &#125;</span><br><span class="line">    <span class="keyword">if</span> ([names containsObject:name]) &#123; <span class="keyword">continue</span>; &#125;</span><br><span class="line">    <span class="keyword">if</span> ([domain hasSuffix:cookie.domain] || [domainWithDotPrefix hasSuffix:cookie.domain]) &#123;</span><br><span class="line">      [newCookies addObject:cookie];</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> newCookies;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)cookiesSetStringForCookies:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSHTTPCookie</span> *&gt; *)cookies &#123;</span><br><span class="line">  <span class="built_in">NSMutableArray</span> *arr = [[<span class="built_in">NSMutableArray</span> alloc] init];</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">for</span> (<span class="built_in">NSHTTPCookie</span> *cookie <span class="keyword">in</span> cookies) &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *cookieStr = [<span class="keyword">self</span> stringForCookie:cookie];</span><br><span class="line">    <span class="keyword">if</span> (cookieStr.length) &#123;</span><br><span class="line">      <span class="built_in">NSString</span> *cookieSetString = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;document.cookie = &#x27;%@&#x27;;&quot;</span>, cookieStr];</span><br><span class="line">      [arr addObject:cookieSetString];</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> [arr componentsJoinedByString:<span class="string">@&quot;\n&quot;</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)stringForCookie:(<span class="built_in">NSHTTPCookie</span> *)cookie &#123;</span><br><span class="line">  <span class="keyword">if</span> (!cookie) &#123; <span class="keyword">return</span> <span class="literal">nil</span>; &#125;</span><br><span class="line">  <span class="built_in">NSString</span> *expire = <span class="literal">nil</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (cookie.expiresDate) &#123;</span><br><span class="line">    <span class="built_in">NSDateFormatter</span> *formatter = [[<span class="built_in">NSDateFormatter</span> alloc] init];</span><br><span class="line">    formatter.timeZone = [<span class="built_in">NSTimeZone</span> timeZoneWithAbbreviation:<span class="string">@&quot;UTC&quot;</span>];</span><br><span class="line">    formatter.locale = [<span class="built_in">NSLocale</span> localeWithLocaleIdentifier:<span class="string">@&quot;en_US_POSIX&quot;</span>];</span><br><span class="line">    formatter.dateFormat = <span class="string">@&quot;EEE, d MMM yyyy HH:mm:ss zzz&quot;</span>;</span><br><span class="line">    expire = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;expires=%@;&quot;</span>,[formatter stringFromDate:cookie.expiresDate]];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">NSString</span> *secure = cookie.secure ? <span class="string">@&quot;secure;&quot;</span> : <span class="string">@&quot;&quot;</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;%@=%@;domain=%@;path=%@;%@%@&quot;</span>,</span><br><span class="line">    cookie.name, cookie.value, cookie.domain, cookie.path,</span><br><span class="line">    expire?:<span class="string">@&quot;&quot;</span>,</span><br><span class="line">    secure];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2022-10-23T04:49:35.000Z" itemprop="datePublished">
+              2022-10-23
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/WKWebView/">WKWebView</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2022/10/23/Inject-cookies-in-WKWebView/', // 查找 issus 的条件
+            title: 'Inject cookies in WKWebView',
+            body: 'https://www.ckqing.com/2022/10/23/Inject-cookies-in-WKWebView/ Inject cookies in WKWebView'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>
