@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="keywords" content="iOS,Swift,FE,Computer Science,JavaScript,C/C++">  
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>categories | ckqing.home</title>
+  <title>ckqing.home</title>
   
   <link rel="icon" href="/assets/favicon.jpeg">
   
@@ -115,59 +115,84 @@
 
     <div class="container">
         <div data-pager-shell>
-            <div>
-  <article class='ContentView'>
+            <ul class="Index">
+  
     <header class='PageTitle'>
-        <h1>categories</h1>
+        <h1>{ CocoaPods }</h1>
     </header>
-
-    <section>
+  
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
       
-
+        <h1>
+          <a href="/2022/10/29/Inject-TEST-macros-into-Pods/">Inject TEST macros into Pods</a>
+        </h1>
       
-        <ul class="Tags">
-          <!-- <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Language-learning/">Language learning</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tech/">tech</a><span class="category-list-count">14</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/tech/hexo/">hexo</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/tech/iOS/">iOS</a><span class="category-list-count">11</span></li></ul></li></ul>  -->
-          
-  <li class="tag-list">
+      <div class='ListMeta'>
+  <time datetime="2022-10-29T06:21:36.000Z" itemprop="datePublished">
+    2022-10-29
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/CocoaPods/">CocoaPods</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
   { <a href="/categories/tech/">tech</a> }
   </li>
 
-  <li class="tag-list">
-  { <a href="/categories/Language-learning/">Language learning</a> }
-  </li>
-
-  <li class="tag-list">
+  <li class="meta-text">
   { <a href="/categories/tech/iOS/">iOS</a> }
   </li>
 
-  <li class="tag-list">
-  { <a href="/categories/tech/hexo/">hexo</a> }
-  </li>
 
+  </ul>
+  
+</div>
 
-        </ul>
+    </header>
+    <div>
       
-
-    </section>
-    
-
-    <!-- disqus -->
-    
-
-    <!-- gitalk -->
-    
-
-    
-      <script>
-        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
-        if (window.mermaid) {
-          window.mermaid.init();
-        }
-      </script>
-    
+        <p>When we develop iOS applications, we often use <code>CocoaPods</code> for third-party library management.</p>
+<p>In addition to external third-party libraries, it is common for <code>CocoaPods</code> to be used as a library management tool for individuals or companies.</p>
+<p>We usually use macros such as <code>DEBUG</code> for environment-sensitive branch compilation.</p>
+<p><code>CocoaPods</code> provides <code>DEBUG</code> macro injection by default to facilitate our local debugging.</p>
+<p>However, in actual development projects, in addition to using the <code>DEBUG</code> macro to identify local debugging, macros such as <code>TEST</code> or <code>QA</code> are also used to identify the <code>test</code> build package.</p>
+<p>At this time, we expect that the library in Pods can also inject <code>TEST</code> macros on demand.</p>
+        
+          <div class="more-link">
+            <a href="/2022/10/29/Inject-TEST-macros-into-Pods/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
 </article>
 
-</div>
+    </li>
+  
+</ul>
+
+
 
             <footer>
     <div>© 2022 - Wang Qing </div>

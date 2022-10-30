@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://www.ckqing.com/2022/10/29/Inject-TEST-macros-into-Pods/</loc>
+    <lastmod>2022-10-30</lastmod>
+  </url>
+  <url>
+    <loc>https://www.ckqing.com/2022/10/27/weakSelf-in-dealloc/</loc>
+    <lastmod>2022-10-30</lastmod>
+  </url>
+  <url>
     <loc>https://www.ckqing.com/2022/10/23/Inject-cookies-in-WKWebView/</loc>
     <lastmod>2022-10-23</lastmod>
   </url>

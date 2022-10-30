@@ -127,6 +127,138 @@
     <header class="title">
       
         <h1>
+          <a href="/2022/10/29/Inject-TEST-macros-into-Pods/">Inject TEST macros into Pods</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2022-10-29T06:21:36.000Z" itemprop="datePublished">
+    2022-10-29
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/CocoaPods/">CocoaPods</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/tech/">tech</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/categories/tech/iOS/">iOS</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    </header>
+    <div>
+      
+        <p>When we develop iOS applications, we often use <code>CocoaPods</code> for third-party library management.</p>
+<p>In addition to external third-party libraries, it is common for <code>CocoaPods</code> to be used as a library management tool for individuals or companies.</p>
+<p>We usually use macros such as <code>DEBUG</code> for environment-sensitive branch compilation.</p>
+<p><code>CocoaPods</code> provides <code>DEBUG</code> macro injection by default to facilitate our local debugging.</p>
+<p>However, in actual development projects, in addition to using the <code>DEBUG</code> macro to identify local debugging, macros such as <code>TEST</code> or <code>QA</code> are also used to identify the <code>test</code> build package.</p>
+<p>At this time, we expect that the library in Pods can also inject <code>TEST</code> macros on demand.</p>
+        
+          <div class="more-link">
+            <a href="/2022/10/29/Inject-TEST-macros-into-Pods/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
+          <a href="/2022/10/27/weakSelf-in-dealloc/">weakSelf in dealloc</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2022-10-27T05:46:37.000Z" itemprop="datePublished">
+    2022-10-27
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Crash/">Crash</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/tech/">tech</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/categories/tech/iOS/">iOS</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    </header>
+    <div>
+      
+        <p>We all know that it is generally recommended to do simple cleanup in the <code>dealloc</code> method.</p>
+<p>A very important reason is that in the process of destroying an object, if an operation such as <code>weak</code> is performed, it will cause a <strong>crash</strong>.</p>
+        
+          <div class="more-link">
+            <a href="/2022/10/27/weakSelf-in-dealloc/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
           <a href="/2022/10/23/Inject-cookies-in-WKWebView/">Inject cookies in WKWebView</a>
         </h1>
       

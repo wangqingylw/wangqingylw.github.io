@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="iOS,Objective-C,CocoaPods">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Inject TEST macros into Pods | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Inject TEST macros into Pods</h1>
+    </header>
+
+    <section>
+      <p>When we develop iOS applications, we often use <code>CocoaPods</code> for third-party library management.</p>
+<p>In addition to external third-party libraries, it is common for <code>CocoaPods</code> to be used as a library management tool for individuals or companies.</p>
+<p>We usually use macros such as <code>DEBUG</code> for environment-sensitive branch compilation.</p>
+<p><code>CocoaPods</code> provides <code>DEBUG</code> macro injection by default to facilitate our local debugging.</p>
+<p>However, in actual development projects, in addition to using the <code>DEBUG</code> macro to identify local debugging, macros such as <code>TEST</code> or <code>QA</code> are also used to identify the <code>test</code> build package.</p>
+<p>At this time, we expect that the library in Pods can also inject <code>TEST</code> macros on demand.</p>
+<span id="more"></span>
+
+<p>In fact, CocoaPods provides enough customization capabilities for project files.</p>
+<p>In simple terms, you can do something like the following</p>
+<blockquote>
+<p>Note that the use of <code>Debug</code> Configuration here is only for example, in practice, test packages often use different Configurations.</p>
+</blockquote>
+<blockquote>
+<p>This part of the code is usually at the end of the <code>Podfile</code>. After the modification, you need to execute <code>pod install</code> to take effect.</p>
+</blockquote>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">target <span class="string">&#x27;XXXXXX&#x27;</span> <span class="keyword">do</span></span><br><span class="line">  pod <span class="string">&#x27;xxxx&#x27;</span>, <span class="string">&#x27;~&gt; 1.1.1&#x27;</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">add_test_pod = [<span class="string">&#x27;React&#x27;</span>]</span><br><span class="line"></span><br><span class="line">post_install <span class="keyword">do</span> |<span class="params">installer</span>|</span><br><span class="line">    installer.pods_project.targets.each <span class="keyword">do</span> |<span class="params">target</span>|</span><br><span class="line">        target.build_configurations.each <span class="keyword">do</span> |<span class="params">config</span>|</span><br><span class="line">            <span class="keyword">if</span> (config.name == <span class="string">&#x27;Debug&#x27;</span>) <span class="keyword">and</span> add_test_pod.<span class="keyword">include</span>?(target.name)</span><br><span class="line">                config.build_settings[<span class="string">&#x27;GCC_PREPROCESSOR_DEFINITIONS&#x27;</span>] |<span class="params"></span>|= [<span class="string">&#x27;$(inherited)&#x27;</span>,<span class="string">&#x27;TEST=1&#x27;</span>, <span class="string">&#x27;QA=1&#x27;</span>]</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>We can check whether the configuration of the preprocessor macro (<code>GCC_PREPROCESSOR_DEFINITIONS</code>) in the <code>Targets</code> of Pods is as expected.</p>
+<p>Here is the <code>Project</code> configuration for Pods.<br><img src="/assets/inject-test-macros-into-pods/pods-project.png" alt="pods-project"></p>
+<p>Here is the <code>Targets</code> configuration of the Pods <strong>before the modification</strong>. Note that the <code>DEBUG</code> macro is read from the <code>Project</code> configuration using <code>inheritance</code>.<br><img src="/assets/inject-test-macros-into-pods/pods-targets-before.png" alt="pods-targets-before"></p>
+<p>Here is the <code>Targets</code> configuration for the <strong>modified</strong> Pods.<br><img src="/assets/inject-test-macros-into-pods/pods-targets-after.png" alt="pods-targets-after"></p>
+<p>The modification method here is to adopt the principle of modification with the <strong>smallest</strong> impact scope.</p>
+<p>The affected area of ​​the change is the <code>Target</code> configuration of a specific part of the library in the Pods project.</p>
+<p>You can also directly modify the <code>Project</code> configuration of Pods, or <code>all Target</code> configurations, as needed.</p>
+<p>In addition, it should be noted that <code>preprocessing</code> macros are only valid for third-party libraries compiled from <strong>source code</strong>, after all, they affect the <strong>compilation process</strong>.</p>
+<p>Has <strong>no effect</strong> if the imported library is a <strong>compiled binary</strong>. In this case you need to consider contacting the person who exported the binary library to provide a different binary library.</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2022-10-29T06:21:36.000Z" itemprop="datePublished">
+              2022-10-29
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/CocoaPods/">CocoaPods</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2022/10/29/Inject-TEST-macros-into-Pods/', // 查找 issus 的条件
+            title: 'Inject TEST macros into Pods',
+            body: 'https://www.ckqing.com/2022/10/29/Inject-TEST-macros-into-Pods/ Inject TEST macros into Pods'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>

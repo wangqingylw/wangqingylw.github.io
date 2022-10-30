@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="iOS,Crash,Objective-C">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>weakSelf in dealloc | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>weakSelf in dealloc</h1>
+    </header>
+
+    <section>
+      <p>We all know that it is generally recommended to do simple cleanup in the <code>dealloc</code> method.</p>
+<p>A very important reason is that in the process of destroying an object, if an operation such as <code>weak</code> is performed, it will cause a <strong>crash</strong>.</p>
+<span id="more"></span>
+
+<p>A common crash stack information may be similar to the following</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#0	0x00007ff833e02dba in __abort_with_payload ()</span><br><span class="line">#1	0x00007ff833e04877 in abort_with_payload_wrapper_internal ()</span><br><span class="line">#2	0x00007ff833e04827 in abort_with_reason ()</span><br><span class="line">#3	0x000000010d8508ae in _objc_fatalv(unsigned long long, unsigned long long, char const*, __va_list_tag*) ()</span><br><span class="line">#4	0x000000010d850835 in _objc_fatal(char const*, ...) ()</span><br><span class="line">#5	0x000000010d84d6e1 in weak_register_no_lock ()</span><br><span class="line">#6	0x000000010d84f66c in objc_initWeak ()</span><br><span class="line">...</span><br><span class="line">#8	0x000000010d36a851 in -[A dealloc] at /Users/wangqing/Documents/workplace/studySwift/testObjCForBlog/testObjCForBlog/ViewController.m:31</span><br><span class="line">#9	0x000000010d84e6a1 in objc_object::sidetable_release(bool, bool) ()</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>Generally, when you see words such as <code>weak_register_no_lock</code>, you can immediately react, and a <code>weak</code> reference is created during the process of object <code>dealloc</code>.</p>
+<p>If encountered during local debugging, the <strong>Xcode</strong> console will also display information similar to the following</p>
+<blockquote>
+<p>objc[4271]: Cannot form weak reference to instance (0x60000337c280) of class B. It is possible that this object was over-released, or is in the process of deallocation.</p>
+</blockquote>
+<p>A simple code example that causes a crash is as follows</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)dealloc &#123;</span><br><span class="line">    __<span class="keyword">weak</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_global_queue(<span class="number">0</span>, <span class="number">0</span>), ^&#123;</span><br><span class="line">        __<span class="keyword">strong</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) strongSelf = weakSelf;</span><br><span class="line">        [strongSelf func];</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>If it were that simple, it would have been obvious at a glance. But the actual situation may be more complicated than we expected, such as</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)func &#123;</span><br><span class="line">    __<span class="keyword">weak</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_global_queue(<span class="number">0</span>, <span class="number">0</span>), ^&#123;</span><br><span class="line">        __<span class="keyword">strong</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) strongSelf = weakSelf;</span><br><span class="line">        [strongSelf funcA];</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)dealloc &#123;</span><br><span class="line">    [<span class="keyword">self</span> func];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Scenarios of this sequential call are still easy to spot.</p>
+<p>But in actual projects, if the code is complicated, it may only be triggered when some branches are executed.</p>
+<p>And if these logic branches are some extreme scenarios or abnormal scenarios, they may not be found during testing and appear in the production environment.</p>
+<p>such as</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)doReport &#123;</span><br><span class="line">    <span class="comment">// do report</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)reportSth:(<span class="built_in">NSException</span> *)exception &#123;</span><br><span class="line">    __<span class="keyword">weak</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_global_queue(<span class="number">0</span>, <span class="number">0</span>), ^&#123;</span><br><span class="line">        __<span class="keyword">strong</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) strongSelf = weakSelf;</span><br><span class="line">        <span class="comment">// build report info</span></span><br><span class="line">        [strongSelf doReport];</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)doCleanUp &#123;</span><br><span class="line">    <span class="keyword">@try</span> &#123;</span><br><span class="line">        <span class="comment">// do thing clean</span></span><br><span class="line">        <span class="comment">// @throw [[NSException alloc] initWithName:@&quot;test&quot; reason:@&quot;reason&quot; userInfo:nil];</span></span><br><span class="line">    &#125; <span class="keyword">@catch</span> (<span class="built_in">NSException</span> *exception) &#123;</span><br><span class="line">        [<span class="keyword">self</span> reportSth:exception];</span><br><span class="line">    &#125; <span class="keyword">@finally</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)dealloc &#123;</span><br><span class="line">    [<span class="keyword">self</span> doCleanUp];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>To sum up, in the <code>dealloc</code> method, try to keep the logic as <strong>simple</strong> as possible to avoid complicated logic and difficult to troubleshoot.</p>
+<p>On the other hand, it is also very important to do a good job of <strong>unit testing</strong> and to cover various <strong>exception branches</strong>.</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2022-10-27T05:46:37.000Z" itemprop="datePublished">
+              2022-10-27
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Crash/">Crash</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2022/10/27/weakSelf-in-dealloc/', // 查找 issus 的条件
+            title: 'weakSelf in dealloc',
+            body: 'https://www.ckqing.com/2022/10/27/weakSelf-in-dealloc/ weakSelf in dealloc'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>

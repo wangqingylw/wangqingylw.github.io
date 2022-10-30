@@ -123,6 +123,138 @@
     <header class="title">
       
         <h1>
+          <a href="/2022/10/29/Inject-TEST-macros-into-Pods/">Inject TEST macros into Pods</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2022-10-29T06:21:36.000Z" itemprop="datePublished">
+    2022-10-29
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/CocoaPods/">CocoaPods</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/tech/">tech</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/categories/tech/iOS/">iOS</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    </header>
+    <div>
+      
+        <p>When we develop iOS applications, we often use <code>CocoaPods</code> for third-party library management.</p>
+<p>In addition to external third-party libraries, it is common for <code>CocoaPods</code> to be used as a library management tool for individuals or companies.</p>
+<p>We usually use macros such as <code>DEBUG</code> for environment-sensitive branch compilation.</p>
+<p><code>CocoaPods</code> provides <code>DEBUG</code> macro injection by default to facilitate our local debugging.</p>
+<p>However, in actual development projects, in addition to using the <code>DEBUG</code> macro to identify local debugging, macros such as <code>TEST</code> or <code>QA</code> are also used to identify the <code>test</code> build package.</p>
+<p>At this time, we expect that the library in Pods can also inject <code>TEST</code> macros on demand.</p>
+        
+          <div class="more-link">
+            <a href="/2022/10/29/Inject-TEST-macros-into-Pods/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
+          <a href="/2022/10/27/weakSelf-in-dealloc/">weakSelf in dealloc</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2022-10-27T05:46:37.000Z" itemprop="datePublished">
+    2022-10-27
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Crash/">Crash</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/tech/">tech</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/categories/tech/iOS/">iOS</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    </header>
+    <div>
+      
+        <p>We all know that it is generally recommended to do simple cleanup in the <code>dealloc</code> method.</p>
+<p>A very important reason is that in the process of destroying an object, if an operation such as <code>weak</code> is performed, it will cause a <strong>crash</strong>.</p>
+        
+          <div class="more-link">
+            <a href="/2022/10/27/weakSelf-in-dealloc/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
           <a href="/2022/10/23/Inject-cookies-in-WKWebView/">Inject cookies in WKWebView</a>
         </h1>
       
@@ -605,118 +737,6 @@
         
           <div class="more-link">
             <a href="/2022/08/31/hexo-comments-mismatch/#more">Read On »</a>
-          </div>
-        
-      
-    </div>
-</article>
-
-    </li>
-  
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2022/05/19/ios-crash-ana/">iOS Crash 符号化解析</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2022-05-18T17:53:08.000Z" itemprop="datePublished">
-    2022-05-19
-  </time>
-  
-  | 
-  <ul>
-    
-  <li class="meta-text">
-  { <a href="/tags/iOS/">iOS</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/Crash/">Crash</a> }
-  </li>
-
-
-  </ul>
-  
-  
-  / 
-  <ul>
-    
-  <li class="meta-text">
-  { <a href="/categories/tech/">tech</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/categories/tech/iOS/">iOS</a> }
-  </li>
-
-
-  </ul>
-  
-</div>
-
-    </header>
-    <div>
-      
-        <p>在公司的时候，通常 Crash 平台都做的很好，帮我们做好了符号化解析，一些三方平台也会提供类似的能力。</p>
-<p>但我们还是会遇到需要自己做符号化解析的场景，比如某些线下包没有解析成功，又比如离开了公司提供的环境的时候等等。</p>
-<p>所以我们还是有必要了解如何做符号化解析。</p>
-        
-          <div class="more-link">
-            <a href="/2022/05/19/ios-crash-ana/#more">Read On »</a>
-          </div>
-        
-      
-    </div>
-</article>
-
-    </li>
-  
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2022/05/10/jp-wake/">日语学习-わけ</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2022-05-10T04:37:03.000Z" itemprop="datePublished">
-    2022-05-10
-  </time>
-  
-  | 
-  <ul>
-    
-  <li class="meta-text">
-  { <a href="/tags/%E6%97%A5%E6%9C%AC%E8%AA%9E/">日本語</a> }
-  </li>
-
-
-  </ul>
-  
-  
-  / 
-  <ul>
-    
-  <li class="meta-text">
-  { <a href="/categories/Language-learning/">Language learning</a> }
-  </li>
-
-
-  </ul>
-  
-</div>
-
-    </header>
-    <div>
-      
-        <p>わけ（訳）：道理、理由、原因<br>言い訳：借口</p>
-        
-          <div class="more-link">
-            <a href="/2022/05/10/jp-wake/#more">Read On »</a>
           </div>
         
       
