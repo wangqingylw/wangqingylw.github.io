@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="iOS,Objective-C,CocoaPods">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Preprocessor Macros in Pods | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Preprocessor Macros in Pods</h1>
+    </header>
+
+    <section>
+      <p>As mentioned earlier, we can inject macros into Pods from the outside by modifying the Podfile. You can refer to this article <a href="/2022/10/29/Inject-TEST-macros-into-Pods/" title="Inject TEST macros into Pods">Inject TEST macros into Pods</a>.</p>
+<p>Sometimes there are some macros that are expected to be used inside the Pods library we wrote ourselves.</p>
+<p>A common practice, just like ordinary business code, define a macro definition header file, and then import.</p>
+<p>But sometimes there are such scenarios, such as logging or providing some externally exposed APIs, you need to provide the version of the current library.</p>
+<span id="more"></span>
+
+<p>At first, it may be considered to manually modify the version information for each release.</p>
+<p>But in many large companies, the version upgrade of the component library is done automatically by <strong>build tools</strong>, <strong>build platforms</strong>, etc.</p>
+<p>These common CI&#x2F;CD tools and platforms will intelligently update the version number in the podspec file. But it can only do so much.</p>
+<p>It is not a good practice to predict the version number that may be upgraded in advance and encode it into the code. In particular, when the build fails, the version number jumps, or some unexpected version number changes.</p>
+<p>In fact, what we expect is to be able to <strong>generate precompiled macros directly from the information in the podspec</strong>, as well as define macros directly in the podspec.</p>
+<p>We can learn about reasonable and correct practices by consulting the official documentation of <strong>CocoaPods</strong> and learning from many excellent <strong>Pods</strong> libraries.</p>
+<p>What we have to do is inject macros through <code>xcconfig</code> and configure our <code>xcconfig</code> through <code>podspec</code>.</p>
+<p>It should be pointed out that both <strong>Podfile</strong> files and <strong>podspec</strong> files are essentially <code>ruby</code> scripts. Knowing this will also be of great help for us to understand the working mode of <strong>CocoaPods</strong>.</p>
+<p>Standard practice is described directly below.</p>
+<p>We can customize <code>xcconfig</code> through the <code>xcconfig</code> configuration in podspec.</p>
+<p>When configuring <code>xcconfig</code>, we can use various configurations in podspec, such as <code>s.version</code>.</p>
+<p>The sample code is as follows.</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Pod::Spec</span>.new <span class="keyword">do</span> |<span class="params">s</span>|</span><br><span class="line">  s.name             = <span class="string">&#x27;CKQTestKit&#x27;</span></span><br><span class="line">  s.version          = <span class="string">&#x27;1.1.7&#x27;</span></span><br><span class="line">  s.summary          = <span class="string">&#x27;CKQTestKit.&#x27;</span></span><br><span class="line"></span><br><span class="line">  s.description      = <span class="string">&lt;&lt;-DESC</span></span><br><span class="line"><span class="string">  CKQTestKit。</span></span><br><span class="line"><span class="string">                       DESC</span></span><br><span class="line"></span><br><span class="line">  s.homepage         = <span class="string">&#x27;http://&#x27;</span></span><br><span class="line">  s.license          = &#123; <span class="symbol">:type</span> =&gt; <span class="string">&#x27;MIT&#x27;</span>, <span class="symbol">:file</span> =&gt; <span class="string">&#x27;LICENSE&#x27;</span> &#125;</span><br><span class="line">  s.author           = &#123; <span class="string">&#x27;Wang Qing&#x27;</span> =&gt; <span class="string">&#x27;wq.cyan@gmail.com&#x27;</span> &#125;</span><br><span class="line">  s.source           = &#123; <span class="symbol">:git</span> =&gt; <span class="string">&#x27;ssh://&#x27;</span>, <span class="symbol">:tag</span> =&gt; s.version.to_s &#125;</span><br><span class="line"></span><br><span class="line">  s.ios.deployment_target = <span class="string">&#x27;9.0&#x27;</span></span><br><span class="line"></span><br><span class="line">  s.source_files = <span class="string">&#x27;CKQTestKit/Classes/**/*&#x27;</span></span><br><span class="line">  s.xcconfig = &#123; <span class="string">&quot;GCC_PREPROCESSOR_DEFINITIONS&quot;</span> =&gt; <span class="string">&quot;CKQ_TESTKIT_VERSION=\\@\\\&quot;<span class="subst">#&#123;s.version.to_s&#125;</span>\\\&quot;&quot;</span> &#125;</span><br><span class="line">  </span><br><span class="line">  s.resource_bundles = &#123;</span><br><span class="line">    <span class="string">&#x27;CKQTestKit&#x27;</span> =&gt; [<span class="string">&#x27;CKQTestKit/Assets/js/*.js&#x27;</span>]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  s.dependency <span class="string">&#x27;Mantle&#x27;</span>, <span class="string">&#x27;&gt;= 1.5&#x27;</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>After <code>pod install</code>, the corresponding content in the actually generated xcconfig is as follows.</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=<span class="number">1</span> CKQ_TESTKIT_VERSION=\@\<span class="string">&quot;1.1.7\&quot;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>The actual generated xcconfig file can be found in the <strong>Support Files</strong> of the subproject corresponding to the final generated Pods.</p>
+</blockquote>
+<p>What we need to pay attention to is the <strong>backslash</strong> <code>\</code> used for escaping inside.</p>
+<p>When we inject string macros through <code>xcconfig</code>, both <code>@</code> and <code>&quot;</code> need to be <strong>escaped</strong>.</p>
+<p>And when this code is put into the podspec and wrapped in double quotes, <code>\</code> and <code>&quot;</code> need to be <strong>escaped</strong>.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@&quot;x&quot; -&gt; \@\&quot;x\&quot; -&gt; \\@\\\&quot;x\\\&quot;</span><br></pre></td></tr></table></figure>
+
+<pre class="mermaid">flowchart LR
+  A["@#quot;x#quot;"]--> B["\@\#quot;x\#quot;"]
+  B--> C["\\@\\\#quot;x\\\#quot;"]</pre>
+
+<p>And, in the podspec configuration, we can use <code>#&#123;s.version.to_s&#125;</code> to construct the corresponding configuration using the <code>s.version</code> of the current configuration.</p>
+<p>In this way, we can directly use the <code>CKQ_TESTKIT_VERSION</code> macro to get the current library version in our code, and save the extra cost of manual maintenance.</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2022-11-03T05:33:49.000Z" itemprop="datePublished">
+              2022-11-03
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/CocoaPods/">CocoaPods</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2022/11/03/2022-11-Preprocessor-Macros-in-Pods/', // 查找 issus 的条件
+            title: 'Preprocessor Macros in Pods',
+            body: 'https://www.ckqing.com/2022/11/03/2022-11-Preprocessor-Macros-in-Pods/ Preprocessor Macros in Pods'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+<!-- Temporarily block singlepager -->
+<!-- 
+<script src="/js/pager/dist/singlepager.js"></script>
+ -->
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>

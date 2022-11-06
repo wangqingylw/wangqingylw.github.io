@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="iOS,Extension">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Extension Version Mismatch | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Extension Version Mismatch</h1>
+    </header>
+
+    <section>
+      <p>When we need to intercept the pushed information and customize the display, we need to use the extension capabilities provided by Apple. It means that our project will become a <strong>multi-target</strong> project.</p>
+<p>At this time, we may encounter the problem of version mismatch.</p>
+<span id="more"></span>
+
+<p>When we submit to Apple for review, to be precise, when we submit the <strong>production</strong> certificate signature package, we may receive an email similar to the following:</p>
+<blockquote>
+<p>App Store Connect</p>
+<p>Dear Developer,</p>
+<p>We identified one or more issues with a recent delivery for your app, “ABCD”. Your delivery was successful, but you may wish to correct the following issues in your next delivery:</p>
+<p>CFBundleVersion Mismatch - The CFBundleVersion value ‘1’ of extension ‘abcd.app&#x2F;PlugIns&#x2F;pushservice.appex’ does not match the CFBundleVersion value ‘168’ of its containing iOS application ‘abcd.app’.</p>
+<p>CFBundleShortVersionString Mismatch - The CFBundleShortVersionString value ‘1.0’ of extension ‘abcd.app&#x2F;PlugIns&#x2F;pushservice.appex’ does not match the CFBundleShortVersionString value ‘2.16.0’ of its containing iOS application ‘abcd.app’.</p>
+<p>After you’ve corrected the issues, you can use Xcode or Application Loader to upload a new binary to App Store Connect.</p>
+<p>Best regards,</p>
+<p>The App Store Team</p>
+</blockquote>
+<p>In fact, we found that even if we ignore this email and do nothing, our APP can still be approved normally, and even our extension can work normally.</p>
+<p>But anyway, to solve this problem, or a better way to deal with it.</p>
+<p>Simply put, the version number of the extension is <strong>inconsistent</strong> with the version number of the main APP.</p>
+<p>The easiest way is to manually modify the relevant extension version number every time you submit.</p>
+<p>But sometimes, the company’s common platform will help us do version number maintenance. Helped, but not all.</p>
+<p>This gives us a problem, and may need to anticipate possible minor version number jumps. As well as tolerating a certain level of version number inconsistency.</p>
+<blockquote>
+<p>The problem of automatic version number synchronization may be a common problem, and it may also be encountered in Pods. See this article <a href="/2022/11/03/2022-11-Preprocessor-Macros-in-Pods/" title="Preprocessor Macros in Pods">Preprocessor Macros in Pods</a>.</p>
+</blockquote>
+<p>Of course, we still expect the most perfect solution to this problem.</p>
+<p>The common idea is to execute a script to synchronize the version number at the right time in <code>Build Phases</code>.</p>
+<p>Here are a few important notes:</p>
+<ol>
+<li><p>To be processed at the compile time of <strong>sub-targets</strong> (ie <strong>extension</strong>). Because of the <strong>order</strong> of compilation dependencies, it is determined that the compilation and signature of the sub-targets are executed first, and then the main target is executed. Because the main target depends on the child targets.<br>  When the main target is compiled, the sub-targets have been compiled and signed, especially the <strong>signature</strong>. If you modify the <code>info.plist</code> file in the sub-targets at this time, it will cause problems such as <strong>inconsistent signatures</strong>.<br>  The debug local debugging seems to be fine, but there will be problems with the actual signature packaging, because the debug mode does not strictly verify the signature, so the problem is not exposed.</p>
+</li>
+<li><p>When modifying <code>info.plist</code>, it is best to use the <code>PlistBuddy</code> tool provided by the system to modify it, rather than using the text editing tool directly. On the one hand, info.plist may be <strong>binary</strong> or <strong>xml</strong>, and the other is convenient for text editing tools that are more prone to errors.</p>
+</li>
+</ol>
+<p>In practice, the specific approach is as follows:</p>
+<p>In the <code>Build Phases</code> of the sub-targets (<strong>extension</strong>), before Compile Sources, add a <code>Phase</code> to synchronize the version number.</p>
+<p>The code can be written as follows:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># abcd is the Main Project Dir</span></span><br><span class="line">mainInfoPlist=<span class="string">&quot;<span class="variable">$&#123;SRCROOT&#125;</span>/abcd/Info.plist&quot;</span></span><br><span class="line">pushInfoPlist=<span class="string">&quot;<span class="variable">$&#123;SRCROOT&#125;</span>/pushservice/Info.plist&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># main info.plist</span></span><br><span class="line">bundleShortVer=`/usr/libexec/PlistBuddy -c <span class="string">&#x27;Print :CFBundleShortVersionString&#x27;</span> <span class="string">&quot;<span class="variable">$&#123;mainInfoPlist&#125;</span>&quot;</span>`</span><br><span class="line">buildNum=`/usr/libexec/PlistBuddy -c <span class="string">&#x27;Print :CFBundleVersion&#x27;</span> <span class="string">&quot;<span class="variable">$&#123;mainInfoPlist&#125;</span>&quot;</span>`</span><br><span class="line"><span class="comment"># logger</span></span><br><span class="line"><span class="comment"># echo &quot;push-sync-bundle-ver-$&#123;bundleShortVer&#125;&quot;</span></span><br><span class="line"><span class="comment"># echo &quot;push-sync-build-num-$&#123;buildNum&#125;&quot;</span></span><br><span class="line"><span class="comment"># Replace sub info.plist</span></span><br><span class="line">/usr/libexec/PlistBuddy -c <span class="string">&quot;Set :CFBundleShortVersionString <span class="variable">$bundleShortVer</span>&quot;</span> <span class="string">&quot;<span class="variable">$&#123;pushInfoPlist&#125;</span>&quot;</span></span><br><span class="line">/usr/libexec/PlistBuddy -c <span class="string">&quot;Set :CFBundleVersion <span class="variable">$buildNum</span>&quot;</span> <span class="string">&quot;<span class="variable">$&#123;pushInfoPlist&#125;</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>For the location and general writing of the specific configuration in the project project, you can refer to the following two example pictures.</p>
+<p><img src="/assets/2022-11-Extension-Version-Mismatch/build-phases.png" alt="build-phases"><br><img src="/assets/2022-11-Extension-Version-Mismatch/script.png" alt="script"></p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2022-11-05T06:27:12.000Z" itemprop="datePublished">
+              2022-11-05
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Extension/">Extension</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2022/11/05/2022-11-Extension-Version-Mismatch/', // 查找 issus 的条件
+            title: 'Extension Version Mismatch',
+            body: 'https://www.ckqing.com/2022/11/05/2022-11-Extension-Version-Mismatch/ Extension Version Mismatch'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+<!-- Temporarily block singlepager -->
+<!-- 
+<script src="/js/pager/dist/singlepager.js"></script>
+ -->
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>
