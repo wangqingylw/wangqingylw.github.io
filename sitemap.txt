@@ -1,3 +1,4 @@
+https://www.ckqing.com/2022/11/09/2022-11-Quickly-build-VPN-from-VPS/
 https://www.ckqing.com/2022/11/05/2022-11-Extension-Version-Mismatch/
 https://www.ckqing.com/2022/11/03/2022-11-Preprocessor-Macros-in-Pods/
 https://www.ckqing.com/2022/10/29/Inject-TEST-macros-into-Pods/
@@ -38,6 +39,9 @@ https://www.ckqing.com/tags/env/
 https://www.ckqing.com/tags/WKWebView/
 https://www.ckqing.com/tags/CocoaPods/
 https://www.ckqing.com/tags/Extension/
+https://www.ckqing.com/tags/VPS/
+https://www.ckqing.com/tags/VPN/
+https://www.ckqing.com/tags/Shadowsocks/
 https://www.ckqing.com/categories/tech/
 https://www.ckqing.com/categories/Language-learning/
 https://www.ckqing.com/categories/tech/iOS/
