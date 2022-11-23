@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="iOS,Swift,SwiftUI">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Why State update doesn&#39;t work | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Why State update doesn&#39;t work</h1>
+    </header>
+
+    <section>
+      <p>Recently, some personal apps have begun to try to use SwiftUI.</p>
+<p>Although some simple layouts, SwiftUI is indeed very efficient in development. But in actual development, many problems will be encountered.</p>
+<ol>
+<li>The development concept is different from UIKit, which leads to unaccustomed.</li>
+<li>Some components only have UIKit and need to be encapsulated.</li>
+<li>There will be compatibility issues with different versions of Xcode and operating systems.</li>
+<li>Sometimes some writing methods lead to actual effects that do not meet expectations.</li>
+<li>And so on.</li>
+</ol>
+<p>I have encountered a situation where the <code>State</code> change does not <code>take effect</code>, and it is also possible that my usage is not completely correct.</p>
+<span id="more"></span>
+
+<p>Briefly describe my appeal: </p>
+<ol>
+<li>A pop-up window is completed by another component, which is actually a UIKit external component. For the convenience of description, I will simply write an example here.</li>
+<li>There are 2 buttons on the page, which will determine the data in the pop-up window.</li>
+<li>The pop-up window is displayed according to the incoming data.</li>
+</ol>
+<p>The expected effect is similar to the following:</p>
+<div align="center">
+  <img src="/assets/2022-11-Why-State-update-doesn-t-work/expect.gif" width="300px">
+</div>
+
+<p>It looks simple, doesn’t it, but the actual effect is this:</p>
+<div align="center">
+  <img src="/assets/2022-11-Why-State-update-doesn-t-work/actual.gif" width="300px">
+</div>
+
+<p>Strictly speaking, the phenomenon is: the <code>first</code> pop-up window does <code>not</code> pass the <code>modified value</code>, but the<code> default value</code>, and the second and subsequent times, it can be passed correctly.</p>
+<p>Here is the sample code:</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Foundation</span><br><span class="line"><span class="keyword">import</span> SwiftUI</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">TestView</span>: <span class="title class_">View</span> &#123;</span><br><span class="line">  <span class="keyword">var</span> showNum: <span class="type">Int</span></span><br><span class="line">  <span class="keyword">var</span> body: <span class="keyword">some</span> <span class="type">View</span> &#123;</span><br><span class="line">      <span class="type">VStack</span> &#123;</span><br><span class="line">          <span class="type">Text</span>(<span class="string">&quot;<span class="subst">\(showNum)</span>&quot;</span>)</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">EntryView</span>: <span class="title class_">View</span> &#123;</span><br><span class="line">  <span class="meta">@State</span> <span class="keyword">private</span> <span class="keyword">var</span> testNumber <span class="operator">=</span> <span class="number">0</span></span><br><span class="line">  <span class="meta">@State</span> <span class="keyword">private</span> <span class="keyword">var</span> showNumber <span class="operator">=</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> body: <span class="keyword">some</span> <span class="type">View</span> &#123;</span><br><span class="line">  <span class="type">NavigationView</span> &#123;</span><br><span class="line">    <span class="type">VStack</span> &#123;</span><br><span class="line">        <span class="type">HStack</span> &#123;</span><br><span class="line">            <span class="type">Button</span>(action: &#123;</span><br><span class="line">                testNumber <span class="operator">=</span> <span class="number">1</span></span><br><span class="line">                <span class="keyword">self</span>.showNumber.toggle()</span><br><span class="line">            &#125;) &#123;</span><br><span class="line">                <span class="type">Text</span>(<span class="string">&quot;change 1&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            .qingButtonStyle()</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Text(&quot;\(testNumber)&quot;)</span></span><br><span class="line">            </span><br><span class="line">            <span class="type">Button</span>(action: &#123;</span><br><span class="line">                testNumber <span class="operator">=</span> <span class="number">2</span></span><br><span class="line">                <span class="keyword">self</span>.showNumber.toggle()</span><br><span class="line">            &#125;) &#123;</span><br><span class="line">                <span class="type">Text</span>(<span class="string">&quot;change 2&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            .qingButtonStyle()</span><br><span class="line">        &#125;</span><br><span class="line">        .sheet(isPresented: <span class="variable">$showNumber</span>) &#123;</span><br><span class="line">            <span class="type">TestView</span>(showNum: testNumber)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;.navigationTitle(<span class="string">&quot;Choose Photo&quot;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Looks fine doesn’t it? But the actual effect is very unexpected.</p>
+<p>After troubleshooting and trying for a while, I found another fact. Pay attention to line 30 or so of the above code, I leave a comment.</p>
+<p>If I use a <code>Text</code> to display testNumber <code>directly</code> on the view, the actual effect will match the expectation.</p>
+<p>The effect is as follows:</p>
+<div align="center">
+  <img src="/assets/2022-11-Why-State-update-doesn-t-work/actual-2.gif" width="300px">
+</div>
+
+<p>What a shock!</p>
+<p>Considering that SwiftUI is <code>declarative</code> programming, the actual coding is just to use <code>structure</code> to express the view structure. The SwiftUI view refresh logic is closely related to the <code>diff</code> logic calculation of the <code>view tree</code>.</p>
+<p>When there is no line 30, the diff logic of the view tree cannot determine the difference, resulting in the view not being refreshed in time.</p>
+<p>In the actual project, due to subsequent logic adjustments, <code>multiple States</code> are used to handle the display logic, which bypasses this problem.</p>
+<p>Similar to the following code:</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">EntryView</span>: <span class="title class_">View</span> &#123;</span><br><span class="line">  <span class="comment">//@State private var testNumber = 0</span></span><br><span class="line">  <span class="meta">@State</span> <span class="keyword">private</span> <span class="keyword">var</span> showNumberOne <span class="operator">=</span> <span class="literal">false</span></span><br><span class="line">  <span class="meta">@State</span> <span class="keyword">private</span> <span class="keyword">var</span> showNumberTwo <span class="operator">=</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> body: <span class="keyword">some</span> <span class="type">View</span> &#123;</span><br><span class="line">  <span class="type">NavigationView</span> &#123;</span><br><span class="line">    <span class="type">VStack</span> &#123;</span><br><span class="line">        <span class="type">HStack</span> &#123;</span><br><span class="line">            <span class="type">Button</span>(action: &#123;</span><br><span class="line">                <span class="comment">// testNumber = 1</span></span><br><span class="line">                <span class="keyword">self</span>.showNumberOne.toggle()</span><br><span class="line">            &#125;) &#123;</span><br><span class="line">                <span class="type">Text</span>(<span class="string">&quot;change 1&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            .qingButtonStyle()</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Text(&quot;\(testNumber)&quot;)</span></span><br><span class="line">            </span><br><span class="line">            <span class="type">Button</span>(action: &#123;</span><br><span class="line">                <span class="comment">// testNumber = 2</span></span><br><span class="line">                <span class="keyword">self</span>.showNumberTwo.toggle()</span><br><span class="line">            &#125;) &#123;</span><br><span class="line">                <span class="type">Text</span>(<span class="string">&quot;change 2&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            .qingButtonStyle()</span><br><span class="line">        &#125;</span><br><span class="line">        .sheet(isPresented: <span class="variable">$showNumberOne</span>) &#123;</span><br><span class="line">            <span class="type">TestView</span>(showNum: <span class="number">1</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        .sheet(isPresented: <span class="variable">$showNumberTwo</span>) &#123;</span><br><span class="line">            <span class="type">TestView</span>(showNum: <span class="number">2</span>)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;.navigationTitle(<span class="string">&quot;Choose Photo&quot;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>But it feels very inelegant, but because I really haven’t found a better solution, I can only deal with it temporarily.</p>
+<p>If the view refresh of SwiftUI does not meet expectations, you can check in this way, that is, whether the <code>update of the State</code> will directly affect the <code>change of the view tree</code>.</p>
+<p>We will continue to explore how to handle this situation more gracefully under SwiftUI later.</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2022-11-22T15:29:44.000Z" itemprop="datePublished">
+              2022-11-22
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Swift/">Swift</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/SwiftUI/">SwiftUI</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2022/11/22/2022-11-Why-State-update-doesn-t-work/', // 查找 issus 的条件
+            title: 'Why State update doesn&#39;t work',
+            body: 'https://www.ckqing.com/2022/11/22/2022-11-Why-State-update-doesn-t-work/ Why State update doesn&#39;t work'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+<!-- Temporarily block singlepager -->
+<!-- 
+<script src="/js/pager/dist/singlepager.js"></script>
+ -->
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>
