@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="keywords" content="iOS,review">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>When Rejected For UIRequiredDeviceCapabilities | ckqing.home</title>
+  <title>Why Should Take &#34;What&#39;s New&#34; Seriously | ckqing.home</title>
   
   <link rel="icon" href="/assets/favicon.jpeg">
   
@@ -118,11 +118,11 @@
             <div>
   <article class='ContentView'>
     <header class='PageTitle'>
-        <h1>When Rejected For UIRequiredDeviceCapabilities</h1>
+        <h1>Why Should Take &#34;What&#39;s New&#34; Seriously</h1>
     </header>
     <div class='ListMeta'>
-  <time datetime="2022-09-12T05:19:18.000Z" itemprop="datePublished">
-    2022-09-12
+  <time datetime="2022-11-26T04:26:51.000Z" itemprop="datePublished">
+    2022-11-26
   </time>
   
   | 
@@ -157,26 +157,36 @@
 </div>
 
     <section>
-      <p>A month ago, after I submitted the AppStore review as usual. Soon I received a review response with the subject line “We noticed an issue with your submission.”</p>
-<p>I guess I may have screwed up again.</p>
-<p>The reason for rejection is about <code>UIRequiredDeviceCapabilities</code>.</p>
+      <p>For personal APP, it may pay more attention to the writing of “What’s New” to attract more users to download and upgrade.</p>
+<p>If you work for a large company, the content source might be a product manager or operations.</p>
+<p>So how to write What’s New better? We often see some novel serialization or small humor, which is very interesting.</p>
+<p>But in any case, I advise everyone to show your artistic talents on the <code>basis of writing real and updated content</code>.</p>
+<p>Because we have been rejected for violating the <code>&quot;Performance - Accurate Metadata&quot;</code> clause.</p>
 <span id="more"></span>
 
-<p>The text of the email is as follows:</p>
+<p>The background of the story is a time when the <code>Chinese New Year</code> is approaching.</p>
+<p>Therefore, this release shows the style of the prosperous Chinese New Year.</p>
+<p>As usual, I got the “What’s New” from the product manager.</p>
+<p>Guess what I got, a <code>Chinese poem</code>, and only this <code>Chinese poem</code>.</p>
+<p>The content is roughly as follows:</p>
 <blockquote>
-<p>Guideline 2.3 - Performance - Accurate Metadata<br>We were unable to install the app on iPhone. The <code>UIRequiredDeviceCapabilities</code> key in the Info.plist is set in such a way that the app will not install on iPhone .</p>
-<p>Next Steps<br>To resolve this issue, please check the <code>UIRequiredDeviceCapabilities</code> key to verify that it contains only the attributes required for your app features or the attributes that must not be present on the device. Attributes specified by a dictionary should be set to true if they are required and false if they must not be present on the device.</p>
-<p>Resources<br>Please review the <a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/qa/qa1397/_index.html">Technical Q&amp;A 1397: Understanding the UIRequiredDeviceCapabilities key</a> for information on the <code>UIRequiredDeviceCapabilities</code> key.<br>You may also wish to review the dictionary keys table in the <a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/ExpectedAppBehaviors/ExpectedAppBehaviors.html#//apple_ref/doc/uid/TP40007072-CH3-SW5">“Declaring the Required Device Capabilities”</a> section of the App Programming Guide for iOS.</p>
+<p>爆竹声声送祝福，<br>红红火火迎新年；<br>**春节不打烊，<br>恭贺新春开门红。</p>
 </blockquote>
-<p>In conclusion, I did not set UIRequiredDeviceCapabilities in info.plist.</p>
-<p>So I reply to the reviewers as follows:</p>
+<p>simple translation:</p>
 <blockquote>
-<p>Sorry, but I tried to find out that I can install the submitted build from Testflight on the iPhone. I don’t have UIRequiredDeviceCapabilities as the key configuration in the info.plist file.<br>Please try again to see if it can be successfully installed, or provide the device model and system version that cannot be installed, thank you very much.</p>
+<p>The sound of firecrackers sends blessings,<br>Welcome the New Year with prosperity;<br>** are not closed during the Spring Festival,<br>Congratulations on a good start to the Chinese New Year.</p>
 </blockquote>
-<p>Shortly after my reply, Apple replied to me, and the review <strong>continued</strong>. Although there are other issues after that, not related to <code>UIRequiredDeviceCapabilities</code>.</p>
-<p>In conclusion, if you receive emails like this. But you have confirmed that there are no related settings aboout <code>UIRequiredDeviceCapabilities</code> in info.list, so it is most likely a problem on the Apple side. <strong>Simply reply</strong> to confirm that there is no such setting.</p>
-<p>Here’s some official <a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/bundleresources/information_property_list/uirequireddevicecapabilities">documentation</a> on <code>UIRequiredDeviceCapabilities</code>.</p>
-<p>On the other hand, if you really need to make some restrictions on the devices that can be installed, you may need to learn more about the configuration of <code>UIRequiredDeviceCapabilities</code>.</p>
+<p>Doesn’t seem to rhyme, though, and I don’t question the qualifications of a product manager’s level of poetry, even though it took her about half an hour to write it.</p>
+<p>The mood of the holidays made me relax my vigilance, pack it, fill in the content, and submit it for review.</p>
+<p>After that, I received a <code>rejection</code> message from Apple, as follows.</p>
+<blockquote>
+<p>Guideline 2.3.12 - Performance - Accurate Metadata</p>
+<p>We noticed you have included nondescript, temporary, or incomplete information in your app’s “What’s New” text.<br>The “What’s New” text should inform users what has changed in your app since the last update.<br>This includes new features and product changes, but also bug fixes, security updates, and performance improvements.</p>
+<p>Next Steps<br>To resolve this issue, please revise your app’s “What’s New” text to include clear descriptions of any significant changes, including new features or product changes.<br>If your update simply addresses bug fixes, security, or other performance updates, stating so generically in your app’s “What’s New” text is sufficient.<br>For example, “Bug fixes and performance improvements” would be appropriate in that case.</p>
+</blockquote>
+<p>I have to admit that this is the first time I have received such a rejection message. And I’m ashamed that Apple relentlessly walks us through how to write “What’s New”.</p>
+<p>At the end of the story, we used the usual “What’s New” like “fix the problem, optimize the experience”, and we decided not to add the poem that didn’t rhyme.</p>
+<p>So, to sum it up. You can show your artistic talent in “What’s New” and also bring novel experiences to users. But please remember, you must express your talent <code>after</code> clearly expressing the real content of this upgrade.</p>
 
 
       
@@ -186,8 +196,8 @@
       <section class='ArticleMeta'>
           <div>
             Published on&nbsp;
-            <time datetime="2022-09-12T05:19:18.000Z" itemprop="datePublished">
-              2022-09-12
+            <time datetime="2022-11-26T04:26:51.000Z" itemprop="datePublished">
+              2022-11-26
             </time>
           </div>
           
@@ -224,9 +234,9 @@
             owner: 'wangqingylw', // github 用户名
             admin: ["wangqingylw"], // github 用户名
             perPage: 20,
-            id: '/2022/09/12/rejected-for-device-capabilities/', // 查找 issus 的条件
-            title: 'When Rejected For UIRequiredDeviceCapabilities',
-            body: 'https://www.ckqing.com/2022/09/12/rejected-for-device-capabilities/ When Rejected For UIRequiredDeviceCapabilities'
+            id: '/2022/11/26/2022-11-Why-Should-Take-What-s-New-Ser', // 查找 issus 的条件
+            title: 'Why Should Take &#34;What&#39;s New&#34; Seriously',
+            body: 'https://www.ckqing.com/2022/11/26/2022-11-Why-Should-Take-What-s-New-Seriously/ Why Should Take &#34;What&#39;s New&#34; Seriously'
           });
           gitalk.render("gitalk-container");
         </script>
