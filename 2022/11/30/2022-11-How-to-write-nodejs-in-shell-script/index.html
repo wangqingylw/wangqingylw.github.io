@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="Node.js,shell">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>How to Write Node.js in Shell Script | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>How to Write Node.js in Shell Script</h1>
+    </header>
+    <div class='ListMeta'>
+  <time datetime="2022-11-30T05:36:02.000Z" itemprop="datePublished">
+    2022-11-30
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/Node-js/">Node.js</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/shell/">shell</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/tech/">tech</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/categories/tech/shell/">shell</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    <section>
+      <p>The scripts commonly used by iOS developers are <code>Ruby</code>, such as <code>Homebrew</code>, <code>CocoaPods</code>, <code>Fastlane</code>, etc. are all <code>Ruby</code> ​​scripts used.</p>
+<p><code>Python</code> is also a commonly used scripting language, basically you can write a little bit more or less.</p>
+<p><code>Shell</code> is also a commonly used script under Linux&#x2F;Unix. For front-end development, <code>Node.js</code> is probably the more common tool.</p>
+<p>At present, <code>cross-end</code> and <code>hybrid</code> solutions are also widely used in the field of mobile development, such as <code>React Native</code>.</p>
+<p>My company uses React Native extensively to develop mobile applications. Both front-end and native developers are involved, and the technology stack is more like a front-end technology stack.</p>
+<p>Some continuous integration platforms provide many Shell-based plug-ins, such as <code>jenkins</code>.</p>
+<p>There are already many complete automated construction tools under <code>Node.js</code>, such as <code>gulp</code>.</p>
+<p>However, there are still some scenarios where you need to use the <code>shell</code>, and the <code>shell</code> itself is not so friendly to some processing, such as <code>Json</code> processing and so on.</p>
+<p>Especially for some front-end developers, even if they are forced to use <code>shell</code>, they still expect to use the <code>Node.js</code> they are used to to write some script logic.</p>
+<p>Here is a brief description of the approximate writing method. Of course, you can also put all the logic into the <code>JS</code> file, and then use the <code>Node.js</code> command to run the <code>js</code> script directly in the <code>shell</code>, which is also very good. Here is just an <strong>example</strong> of hybrid writing and does <strong>not</strong> represent best practice. It is <strong>not</strong> recommended in actual production.</p>
+<p><strong>For example, we now have such a Json file</strong></p>
+<p>filename: <code>test.json</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ckq_test&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1.0.2&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ckq_test_desc&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;list&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;a&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">10</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;b&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">20</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>We need to find the element whose <code>name</code> is equal to a under the <code>list</code> node inside, change the <code>age</code> to <code>15</code>, and write the file back.</p>
+<p><strong>The following is the code implementation</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="keyword">if</span> [ -n <span class="string">&quot;<span class="variable">$projectRoot</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">cd</span> <span class="variable">$projectRoot</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line">node_exec=<span class="string">&#x27;node --abort-on-uncaught-exception -pe &#x27;</span></span><br><span class="line"></span><br><span class="line">file=<span class="string">&#x27;./test.json&#x27;</span></span><br><span class="line"></span><br><span class="line">test_content=`<span class="variable">$&#123;node_exec&#125;</span> <span class="string">&quot;</span></span><br><span class="line"><span class="string">  var content = require(&#x27;<span class="variable">$&#123;file&#125;</span>&#x27;);</span></span><br><span class="line"><span class="string">  if (content) &#123;</span></span><br><span class="line"><span class="string">    JSON.stringify(content);</span></span><br><span class="line"><span class="string">  &#125; else &#123;</span></span><br><span class="line"><span class="string">    &#x27;&#x27;;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">&quot;</span>`</span><br><span class="line"></span><br><span class="line"><span class="comment">#check file</span></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$test_content</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;Failed: <span class="variable">$&#123;file&#125;</span> is empty!&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">name=<span class="string">&quot;a&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;name [<span class="variable">$&#123;name&#125;</span>]&quot;</span></span><br><span class="line"></span><br><span class="line">new_content=`<span class="variable">$&#123;node_exec&#125;</span> <span class="string">&quot;</span></span><br><span class="line"><span class="string">  var content = <span class="variable">$&#123;test_content&#125;</span>;</span></span><br><span class="line"><span class="string">  var name = &#x27;<span class="variable">$&#123;name&#125;</span>&#x27;;</span></span><br><span class="line"><span class="string">  var find = &#x27;&#x27;;</span></span><br><span class="line"><span class="string">  if (content &amp;&amp; content.list &amp;&amp; Array.isArray(content.list)) &#123;</span></span><br><span class="line"><span class="string">    for (var item of content.list) &#123;</span></span><br><span class="line"><span class="string">      if (item.name === &#x27;<span class="variable">$&#123;name&#125;</span>&#x27;) &#123;</span></span><br><span class="line"><span class="string">        find = item;</span></span><br><span class="line"><span class="string">        break;</span></span><br><span class="line"><span class="string">      &#125;</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  if(find) &#123;</span></span><br><span class="line"><span class="string">    find.age = 15;</span></span><br><span class="line"><span class="string">    JSON.stringify(content, null, 2);</span></span><br><span class="line"><span class="string">  &#125; else &#123;</span></span><br><span class="line"><span class="string">    &#x27;&#x27;;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">&quot;</span>`</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;new content [<span class="variable">$&#123;new_content&#125;</span>]&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$&#123;new_content&#125;</span>&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">&quot;Failed: cannot find person [<span class="variable">$&#123;name&#125;</span>]!&quot;</span></span><br><span class="line">  <span class="built_in">exit</span> 1;</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># write back file</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;new_content&#125;</span>&quot;</span> &gt; <span class="variable">$&#123;file&#125;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Success&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">exit</span> 0;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Summarize</strong></p>
+<p>To sum up, in the <code>shell</code> script, use the <code>node</code> command to execute the <code>JS</code> code snippet.</p>
+<p>It is convenient to write some simple tool scripts in this way, and there is no need to do too much engineering work.</p>
+<p>But the shortcomings are also obvious, <strong>lack</strong> of sufficient <strong>grammar checks</strong>, and it is <strong>difficult</strong> for automated tools to do verification for us. Version management and subsequent <strong>maintenance</strong> of scripts are cumbersome.</p>
+<p>Generally speaking, it is <strong>not recommended</strong> to use in production environment.</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            Published on&nbsp;
+            <time datetime="2022-11-30T05:36:02.000Z" itemprop="datePublished">
+              2022-11-30
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/Node-js/">Node.js</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/shell/">shell</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2022/11/30/2022-11-How-to-write-nodejs-in-shell-s', // 查找 issus 的条件
+            title: 'How to Write Node.js in Shell Script',
+            body: 'https://www.ckqing.com/2022/11/30/2022-11-How-to-write-nodejs-in-shell-script/ How to Write Node.js in Shell Script'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2022 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+<!-- Temporarily block singlepager -->
+<!-- 
+<script src="/js/pager/dist/singlepager.js"></script>
+ -->
+<!-- <script>
+var sp = new Pager('data-pager-shell')
+</script> -->
+</body>
+</html>
