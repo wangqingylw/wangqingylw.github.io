@@ -1,3 +1,5 @@
+https://www.ckqing.com/2022/12/15/2022-12-How-to-Check-If-Color-String-Valid/
+https://www.ckqing.com/test/test1.html
 https://www.ckqing.com/2022/11/05/2022-11-Extension-Version-Mismatch/
 https://www.ckqing.com/2022/11/30/2022-11-How-to-write-nodejs-in-shell-script/
 https://www.ckqing.com/2022/11/26/2022-11-Why-Should-Take-What-s-New-Seriously/
@@ -49,8 +51,10 @@ https://www.ckqing.com/tags/Shadowsocks/
 https://www.ckqing.com/tags/SwiftUI/
 https://www.ckqing.com/tags/Node-js/
 https://www.ckqing.com/tags/shell/
+https://www.ckqing.com/tags/JavaScript/
 https://www.ckqing.com/categories/tech/
 https://www.ckqing.com/categories/Language-learning/
 https://www.ckqing.com/categories/tech/iOS/
 https://www.ckqing.com/categories/tech/hexo/
 https://www.ckqing.com/categories/tech/shell/
+https://www.ckqing.com/categories/tech/JavaScript/
