@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="DHLibxls,DHxlsReader,libxls,PSXLSReader">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>DHLibxls/DHxlsReader libxls PSXLSReader 溢出闪退和数据错乱问题 | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>DHLibxls/DHxlsReader libxls PSXLSReader 溢出闪退和数据错乱问题</h1>
+    </header>
+    <div class='ListMeta'>
+  <time datetime="2024-01-18T11:32:41.000Z" itemprop="datePublished">
+    2024-01-18
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Crash/">Crash</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/xls/">xls</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/tech/">tech</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/categories/tech/iOS/">iOS</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    <section>
+      <p>最近我们的 iOS APP 遇到较多闪退的问题，崩溃在 xls 解析相关代码，经过分析应该是使用的解析库 <code>DHLibxls/DHxlsReader</code> 内部的问题。</p>
+<span id="more"></span>
+
+<h3 id="初步分析"><a href="#初步分析" class="headerlink" title="初步分析"></a>初步分析</h3><p>先看崩溃栈，部分信息如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">SIGSEGV</span><br><span class="line">SEGV_ACCERR</span><br><span class="line"></span><br><span class="line">xls_getfcell (xlstool.c:639)</span><br><span class="line">xls_addCell (xls.c:512)</span><br><span class="line">xls_parseWorkSheet (xls.c:1145)</span><br><span class="line">-[DHxlsReader openSheet:] (DHxlsReader.m:150)</span><br><span class="line">-[DHxlsReader numberOfColsInSheet:] (DHxlsReader.m:0)</span><br></pre></td></tr></table></figure>
+
+<p>可以看出是用来解析 xls 的库 <a target="_blank" rel="noopener" href="https://github.com/dhoerl/DHlibxls"><code>DHlibxls/DHxlsReader</code></a> 发生了闪退，而闪退的位置实际位于其使用的 <a target="_blank" rel="noopener" href="https://github.com/JanX2/libxls/tree/9fa40c49c1f6b9616d8097c5876a25dba2164aae"><code>libxls</code></a> 库。</p>
+<p>留意 <code>DHlibxls/DHxlsReader</code> 用的 <code>libxls</code> <strong>并不是</strong>我去查信息时的<code>master</code>分支，当然最新的<code>master</code>分支<strong>也有问题</strong>，以下会说明。</p>
+<p>直接看崩溃的<a target="_blank" rel="noopener" href="https://github.com/JanX2/libxls/blob/9fa40c49c1f6b9616d8097c5876a25dba2164aae/src/xlstool.c">实际代码</a>，基本可以断定是溢出导致的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// typedef uint16_t WORD;</span></span><br><span class="line"><span class="comment">// WORD *label</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// DHxlsReader 用的 libxls 分支</span></span><br><span class="line"><span class="comment">// line 638</span></span><br><span class="line">asprintf(&amp;ret,<span class="string">&quot;%s&quot;</span>,pWB-&gt;sst.<span class="built_in">string</span>[shortVal(*label)].str);</span><br><span class="line"></span><br><span class="line"><span class="comment">// libxls 的 master 分支</span></span><br><span class="line">asprintf(&amp;ret,<span class="string">&quot;%s&quot;</span>,pWB-&gt;sst.<span class="built_in">string</span>[xlsShortVal(*label)].str);</span><br></pre></td></tr></table></figure>
+
+<p><code>shortVal</code> 方法所在<a target="_blank" rel="noopener" href="https://github.com/JanX2/libxls/blob/9fa40c49c1f6b9616d8097c5876a25dba2164aae/src/endian.c">代码</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DHxlsReader 用的 libxls 分支</span></span><br><span class="line"><span class="comment">// 返回类型是 short</span></span><br><span class="line"><span class="type">short</span> <span class="title function_">shortVal</span> <span class="params">(<span class="type">short</span> s)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> c1, c2;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (is_bigendian()) &#123;</span><br><span class="line">        c1 = s &amp; <span class="number">255</span>;</span><br><span class="line">        c2 = (s &gt;&gt; <span class="number">8</span>) &amp; <span class="number">255</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> (c1 &lt;&lt; <span class="number">8</span>) + c2;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> s;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这个是 master 分支的代码</span></span><br><span class="line"><span class="comment">// 返回类型是 unsigned short</span></span><br><span class="line"><span class="type">unsigned</span> <span class="type">short</span> <span class="title function_">xlsShortVal</span> <span class="params">(<span class="type">short</span> s)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> c1, c2;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (xls_is_bigendian()) &#123;</span><br><span class="line">        c1 = s &amp; <span class="number">255</span>;</span><br><span class="line">        c2 = (s &gt;&gt; <span class="number">8</span>) &amp; <span class="number">255</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> (c1 &lt;&lt; <span class="number">8</span>) + c2;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> s;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>很显然，<code>master</code> 分支已经留意到，当处理成 <code>short</code> （-32,768~32,767）类型之后，超过 <strong>32,767</strong> 的 <code>unsigned short</code> 会被处理成负数，进而引发溢出崩溃。</p>
+<p>所以改动之一即是参考 <code>master</code> 的改动，把 <code>shortVal/xlsShortVal</code> 入参和出参类型都改成 <code>unsigned short/uint16_t</code>。排查下来，这个方法调用的地方，入参基本都是 <code>WORD/uint16_t</code>，这个改动是合理的。</p>
+<p>留意不能只对报错的地方（字符串表下标溢出）做修改，否则还会遇到<strong>行数溢出</strong>的崩溃问题，代码里有很多的地方都调用 <code>shortVal/xlsShortVal</code> 了，包括行数，所以直接修改这个方法才是正确的。</p>
+<h3 id="新的问题"><a href="#新的问题" class="headerlink" title="新的问题"></a>新的问题</h3><p>此处修复完成之后，崩溃问题得到解决。但回测发现对于大表格，数据发生了<strong>错位</strong>，似乎取错了 cell 的数据，排查之后发现原因其实还是在于之前崩溃这一行。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">asprintf(&amp;ret,<span class="string">&quot;%s&quot;</span>,pWB-&gt;sst.<span class="built_in">string</span>[shortVal(*label)].str);</span><br></pre></td></tr></table></figure>
+
+<p>这一行是获取对应的cell的数据，而下标是<strong>字符串表</strong>的位置。众所周知，xls 行数最大是支持到 <strong>65535</strong> 的，意味着 cell 的个是会超过 65535（<code>unsigned short</code> 上界）的 ，即<strong>字符串表</strong>原则上应该也会超过 <code>unsigned short</code> 上界。所以虽然修复了崩溃的问题，但只是不再为负数了，一旦超过 65535，就会从 0 开始重新计数，进而发生错位现象。</p>
+<p>先排查下调用栈。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 原崩溃的代码位置</span></span><br><span class="line">BYTE *<span class="title function_">xls_getfcell</span><span class="params">(xlsWorkBook* pWB,<span class="keyword">struct</span> st_cell_data* cell,WORD *label)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">switch</span> (cell-&gt;id)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">      <span class="keyword">case</span> XLS_RECORD_LABELSST:</span><br><span class="line">      <span class="comment">// 报错的代码</span></span><br><span class="line">        asprintf(&amp;ret,<span class="string">&quot;%s&quot;</span>,pWB-&gt;sst.<span class="built_in">string</span>[xlsShortVal(*label)].str);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 翻一下代码，发现调用的地方有多处，但其中传入 label 的地方不多，如下：</span></span><br><span class="line"><span class="keyword">struct</span> st_cell_data *<span class="title function_">xls_addCell</span><span class="params">(xlsWorkSheet* pWS,BOF* bof,BYTE* buf)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">case</span> XLS_RECORD_LABELSST:</span><br><span class="line">  <span class="keyword">case</span> XLS_RECORD_LABEL:</span><br><span class="line">    cell-&gt;str=xls_getfcell(pWS-&gt;workbook,cell,(WORD_UA *)&amp;((LABEL*)buf)-&gt;value);</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 而调用 xls_addCell 的地方位于</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">xls_parseWorkSheet</span><span class="params">(xlsWorkSheet* pWS)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="type">long</span> lastPos = offset;</span><br><span class="line">      ole2_read(&amp;tmp, <span class="number">1</span>,<span class="number">4</span>,pWS-&gt;workbook-&gt;olestr);</span><br><span class="line">      xlsConvertBof((BOF *)&amp;tmp);</span><br><span class="line">      buf=(BYTE *)<span class="built_in">malloc</span>(tmp.size);</span><br><span class="line">      ole2_read(buf, <span class="number">1</span>,tmp.size,pWS-&gt;workbook-&gt;olestr);</span><br><span class="line">      offset += <span class="number">4</span> + tmp.size;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">      cell = xls_addCell(pWS,&amp;tmp,buf);</span><br><span class="line">      <span class="comment">// ... </span></span><br><span class="line">    &#125; <span class="keyword">while</span> ((!pWS-&gt;workbook-&gt;olestr-&gt;eof)&amp;&amp;(tmp.id!=XLS_RECORD_EOF));</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// LABEL 的类型定义</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">LABEL</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    WORD	row;</span><br><span class="line">    WORD	col;</span><br><span class="line">    WORD	xf;</span><br><span class="line">    BYTE	value[<span class="number">1</span>]; <span class="comment">// var</span></span><br><span class="line">&#125;</span><br><span class="line">LABEL;</span><br><span class="line"><span class="keyword">typedef</span> LABEL LABELSST;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 其他类型定义</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">char</span> BYTE;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">uint16_t</span>      WORD;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">uint16_t</span>      WORD_UA;</span><br></pre></td></tr></table></figure>
+
+<p>虽然 <code>LABEL</code> 类型里定义的是 <code>BYTE	value[1];</code>，但实际使用是转成了 <code>WORD_UA/uint16_t</code>，到底是个多大的存储，由外侧读取的地方才能知道。根据以上代码，可以知道的是，报错的地方是 <code>LABELSST</code> 类型的 cell。</p>
+<p>查阅了下微软的<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-xls/cd03cb5f-ca02-4934-a391-bb674cb8aa06">xls官方文档</a>&#x2F;<a target="_blank" rel="noopener" href="https://msopenspecs.azureedge.net/files/MS-XLS/%5bMS-XLS%5d.pdf">PDF</a>，关于 <code>LABELSST</code> 的内存布局描述，大约在 PDF 的 326 页左右，摘抄部分信息</p>
+<blockquote>
+<p>2.4.149 LabelSst<br>The LabelSst record specifies a cell that contains a string.</p>
+<p><strong>cell (6 bytes)</strong>: A Cell structure that specifies the cell containing the string from the shared string table.<br><strong>isst (4 bytes)</strong>: An unsigned integer that specifies the zero-based index of an element in the array of XLUnicodeRichExtendedString structure in the rgb field of the SST record in this Workbook Stream ABNF that specifies the string contained in the cell. MUST be greater than or equal to zero and less than the number of elements in the rgb field of the SST record.</p>
+</blockquote>
+<p>其中这个 <strong>6 bytes</strong> 的 <code>cell</code> 对应就是代码里的 <code>LABEL</code> 类型前面3个部分，之后的 <code>isst</code> 则对应后面的 <code>value</code> 部分，用来从字符串表取下标找字符串。文档指出是 <strong>4 bytes</strong> 的 <code>unsigned integer</code> 类型，所以用 <code>WORD_UA/uint16_t</code> 来处理是不对的，应当用 <code>uint32_t</code> 来处理。</p>
+<p>所以另一个需要修的地方，就是将取下标处的类型转换，改为 <code>uint32_t</code>.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 原代码</span></span><br><span class="line">asprintf(&amp;ret,<span class="string">&quot;%s&quot;</span>,pWB-&gt;sst.<span class="built_in">string</span>[shortVal(*label)].str);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修复后，其中 DWORD 就是定义的 uint32_t，4 bytes 的 unsigned integer 类型</span></span><br><span class="line"><span class="type">uint32_t</span> p = *((DWORD *)label);</span><br><span class="line">asprintf(&amp;ret,<span class="string">&quot;%s&quot;</span>,pWB-&gt;sst.<span class="built_in">string</span>[p].str);</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>先总结下改动，一共需2处：</p>
+<ol>
+<li>原 <code>shortVal</code> 方法的入参和出参，都从 <code>short</code> 改为 <code>unsigned short</code>。此处改动能解决 cell 过多、row 过多等引起的溢出闪退问题。</li>
+<li>原 <code>xls_getfcell</code> 方法内，对于 <code>XLS_RECORD_LABELSST</code> 类型的 cell 处理，字符串表的下标的类型转换，从 <code>unsinged short / uint16_t</code> 改为 <code>uint32_t</code> 类型。此处能解决 cell 数量过多时读取 cell 数据错位的问题，准确的说是字符串类型的 cell 过多时。</li>
+</ol>
+<p>另外，排查过程中，我们也尝试使用 <a target="_blank" rel="noopener" href="https://github.com/MrPans/PSXLSReader">PSXLSReader</a> 库，这是一个从 <a target="_blank" rel="noopener" href="https://github.com/dhoerl/DHlibxls">DHlibxls&#x2F;DHxlsReader</a> fork 出来优化过的库，发现有<strong>完全一样</strong>的闪退问题和错乱问题。检查源码，发现以上2个问题同样存在。使用 <a target="_blank" rel="noopener" href="https://github.com/dhoerl/DHlibxls">DHlibxls&#x2F;DHxlsReader</a>、<a target="_blank" rel="noopener" href="https://github.com/JanX2/libxls/tree/9fa40c49c1f6b9616d8097c5876a25dba2164aae">libxls</a>、<a target="_blank" rel="noopener" href="https://github.com/MrPans/PSXLSReader">PSXLSReader</a> 进行 xls 解析的同学，如果发现有类似闪退或 cell 错乱问题，可以参考此文档进行排查和修复。</p>
+<p>对于 iOS ，我们的实际修复方案是 fork <a target="_blank" rel="noopener" href="https://github.com/MrPans/PSXLSReader">PSXLSReader</a> 仓库到本地，修复完成后，源码集成。</p>
+<p>另考虑到上述几个仓库最近一次更新时间都比较早了，暂时没有提 PR 到相关的仓库。</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            Published on&nbsp;
+            <time datetime="2024-01-18T11:32:41.000Z" itemprop="datePublished">
+              2024-01-18
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Crash/">Crash</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/xls/">xls</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2024/01/18/2024-01-XLSReaderCrash/', // 查找 issus 的条件
+            title: 'DHLibxls/DHxlsReader libxls PSXLSReader 溢出闪退和数据错乱问题',
+            body: 'https://www.ckqing.com/2024/01/18/2024-01-XLSReaderCrash/ DHLibxls/DHxlsReader libxls PSXLSReader 溢出闪退和数据错乱问题'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2024 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+<!-- Temporarily block singlepager -->
+<!-- 
+<script src="/js/pager/dist/singlepager.js"></script>
+ -->
+<!-- <script>
+var sp = new Pager('data-pager-shell')
+</script> -->
+</body>
+</html>
