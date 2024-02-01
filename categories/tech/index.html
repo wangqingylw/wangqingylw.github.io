@@ -127,6 +127,65 @@
     <header class="title">
       
         <h1>
+          <a href="/2024/02/01/2024-02-Swift-init-didSet/">Swift构造函数(init)与属性观察器(didSet)</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2024-02-01T07:59:28.000Z" itemprop="datePublished">
+    2024-02-01
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Swift/">Swift</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/tech/">tech</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/categories/tech/iOS/">iOS</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    </header>
+    <div>
+      
+        <p>最近工程里 <code>Swift</code> 和 <code>ObjC</code> 混编的场景越来越多了，大家在编写 <code>Swift</code> 代码时，一般都会用 <code>didSet</code> 来作为 <code>ObjC</code> 里 <code>setter</code> 的替代。但最近遇到好几起（自己和其他同事）因为 <code>Swift</code> 中 <code>init</code> 里对属性赋值没有触发 <code>didSet</code>，进而导致结果不符合预期的问题，看来还是对 <code>Swift</code> 使用不熟练，这里稍微汇总下。（另外，末尾会附上 <code>ChatGPT3.5</code> 的回答情况）</p>
+        
+          <div class="more-link">
+            <a href="/2024/02/01/2024-02-Swift-init-didSet/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
           <a href="/2024/01/18/2024-01-XLSReaderCrash/">DHLibxls/DHxlsReader libxls PSXLSReader 溢出闪退和数据错乱问题</a>
         </h1>
       
@@ -686,74 +745,6 @@
         
           <div class="more-link">
             <a href="/2022/11/03/2022-11-Preprocessor-Macros-in-Pods/#more">Read On »</a>
-          </div>
-        
-      
-    </div>
-</article>
-
-    </li>
-  
-    <li>
-      <article class='ListView'>
-    <header class="title">
-      
-        <h1>
-          <a href="/2022/10/29/Inject-TEST-macros-into-Pods/">Inject TEST macros into Pods</a>
-        </h1>
-      
-      <div class='ListMeta'>
-  <time datetime="2022-10-29T06:21:36.000Z" itemprop="datePublished">
-    2022-10-29
-  </time>
-  
-  | 
-  <ul>
-    
-  <li class="meta-text">
-  { <a href="/tags/iOS/">iOS</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/Objective-C/">Objective-C</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/tags/CocoaPods/">CocoaPods</a> }
-  </li>
-
-
-  </ul>
-  
-  
-  / 
-  <ul>
-    
-  <li class="meta-text">
-  { <a href="/categories/tech/">tech</a> }
-  </li>
-
-  <li class="meta-text">
-  { <a href="/categories/tech/iOS/">iOS</a> }
-  </li>
-
-
-  </ul>
-  
-</div>
-
-    </header>
-    <div>
-      
-        <p>When we develop iOS applications, we often use <code>CocoaPods</code> for third-party library management.</p>
-<p>In addition to external third-party libraries, it is common for <code>CocoaPods</code> to be used as a library management tool for individuals or companies.</p>
-<p>We usually use macros such as <code>DEBUG</code> for environment-sensitive branch compilation.</p>
-<p><code>CocoaPods</code> provides <code>DEBUG</code> macro injection by default to facilitate our local debugging.</p>
-<p>However, in actual development projects, in addition to using the <code>DEBUG</code> macro to identify local debugging, macros such as <code>TEST</code> or <code>QA</code> are also used to identify the <code>test</code> build package.</p>
-<p>At this time, we expect that the library in Pods can also inject <code>TEST</code> macros on demand.</p>
-        
-          <div class="more-link">
-            <a href="/2022/10/29/Inject-TEST-macros-into-Pods/#more">Read On »</a>
           </div>
         
       

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="ObjC,didSet,SIL,ChatGPT">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Swift构造函数(init)与属性观察器(didSet) | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpeg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Swift构造函数(init)与属性观察器(didSet)</h1>
+    </header>
+    <div class='ListMeta'>
+  <time datetime="2024-02-01T07:59:28.000Z" itemprop="datePublished">
+    2024-02-01
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Swift/">Swift</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/tech/">tech</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/categories/tech/iOS/">iOS</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    <section>
+      <p>最近工程里 <code>Swift</code> 和 <code>ObjC</code> 混编的场景越来越多了，大家在编写 <code>Swift</code> 代码时，一般都会用 <code>didSet</code> 来作为 <code>ObjC</code> 里 <code>setter</code> 的替代。但最近遇到好几起（自己和其他同事）因为 <code>Swift</code> 中 <code>init</code> 里对属性赋值没有触发 <code>didSet</code>，进而导致结果不符合预期的问题，看来还是对 <code>Swift</code> 使用不熟练，这里稍微汇总下。（另外，末尾会附上 <code>ChatGPT3.5</code> 的回答情况）</p>
+<span id="more"></span>
+
+<blockquote>
+<p>环境<br>Xcode 15.2<br>Swift 5.9</p>
+</blockquote>
+<h3 id="有关属性赋值"><a href="#有关属性赋值" class="headerlink" title="有关属性赋值"></a>有关属性赋值</h3><p>大家都很熟悉 <code>ObjC</code> 里对属性赋值，一般有2种，一种是<code>点操作符</code>（即 <code>a.x = 1</code>），一种是直接对成员变量 <code>ivar</code> 赋值（即 <code>_x = 1</code>）。</p>
+<p>大家都很熟悉 <code>@property = ivar + setter + getter</code>，而<code>点操作符</code>实际是<code>setter/getter</code>的语法糖。</p>
+<p>进而有常见的初级面试题：</p>
+<blockquote>
+<p>在构造函数里，对属性赋值，对使用点操作符有什么建议？</p>
+</blockquote>
+<p>答案并不固定，基本言之成理即可，无外乎「尽量少用，因为可能会在初始化完成之前，触发不必要的<code>setter</code>，而其中可能有不确定的逻辑，带来风险」，「如果能明确<code>setter</code>的逻辑，并且期望将部分逻辑收敛至<code>setter</code>内，也是可以使用的，但要留意风险」，基本言之有理即可。</p>
+<p>那进入 <code>Swift</code> 时代，在做代码迁移，或者开发过程中，会使用 <code>willSet/didSet</code> 来作为 <code>ObjC</code> 时代 <code>setter</code> 的替代。</p>
+<p>比如：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Swift</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyClass</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> myProperty: <span class="type">String</span> &#123;</span><br><span class="line">        <span class="keyword">didSet</span> &#123;</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;Property has been set.&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是 <code>Swift</code> 里并没有区分 <code>点操作符</code> 和 <code>成员变量直接赋值</code> 2种逻辑，即使不显示标注 <code>self</code> 也是相同的逻辑，所以大家倾向于统一当做都是类似 <code>ObjC</code> 的 <code>点操作符</code>，即 <code>setter</code> 方法。</p>
+<p>然而事实上在<code>默认值</code>、构造函数（<code>init</code>）等场景下，其实是 <strong>不会触发</strong> <code>didSet</code> 等方法的，有些同学是完全不知道，有些同学是知道，但经常想不起来。</p>
+<h3 id="苹果的解释"><a href="#苹果的解释" class="headerlink" title="苹果的解释"></a>苹果的解释</h3><p>先看看苹果官方的描述，有2段来源，一段是关于<code>属性/(properties)</code>的描述，另一段是关于<code>构造函数</code>的描述。</p>
+<p><a target="_blank" rel="noopener" href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/properties/">The Swift Programming Language (5.9.2)&#x2F;Properties</a></p>
+<blockquote>
+<p>Note<br>The willSet and didSet observers of superclass properties are called when a property is set in a subclass initializer, after the superclass initializer has been called. They aren’t called while a class is setting its own properties, before the superclass initializer has been called.</p>
+</blockquote>
+<blockquote>
+<p>在调用<strong>超类初始值设定项之后</strong>，在子类构造器设置属性时，将调用超类属性的 willSet 和 didSet 观察者。<br>在调用<strong>超类初始值设定项之前</strong>，类在设置自己的属性时不会调用它们。</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/initialization/#Initializer-Delegation-for-Value-Types">The Swift Programming Language (5.9.2)&#x2F;Initialization</a></p>
+<blockquote>
+<p>Note<br>When you assign a default value to a stored property, or set its initial value within an initializer, the value of that property is set directly, without calling any property observers.</p>
+</blockquote>
+<blockquote>
+<p>当您为存储的属性分配<strong>默认值</strong>或在<strong>构造器中</strong>设置其初始值时，将直接设置该属性的值，而不调用任何属性观察器。</p>
+</blockquote>
+<p>总结下来，几个原则：</p>
+<ol>
+<li>默认值，不触发</li>
+<li>构造器中赋值，不触发（自身属性，非父类属性）</li>
+<li>构造器中赋值，在子类调用 <code>super.init</code> 之后，如果对父类属性赋值，则触发（对第2点的补充）</li>
+</ol>
+<p>针对苹果的第1段描述，上述第3点写的简略了，原因：</p>
+<ol>
+<li>在子类调用 <code>super.init</code> 之前，其实本来就不能对父类属性赋值，会报编译错误 <code>&#39;self&#39; used in property access &#39;xxx&#39; before &#39;super.init&#39; call</code>。</li>
+<li>而如果是对自己的属性赋值，其实无论在 <code>super.init</code> 之前还是之后，其实都不会触发。</li>
+</ol>
+<p>但其实单纯从苹果给的描述，并不能覆盖所有场景，比如：</p>
+<ol>
+<li>构造器调用另一个方法对属性赋值，是否触发？</li>
+<li>构造器使用 <code>kvc</code> 对属性赋值，是否触发？</li>
+<li>构造器内部用 <code>block</code> 对属性赋值，是否触发？<blockquote>
+<p>其实 2 和 3 本质还是第 1 个问题。</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="Swift的实现"><a href="#Swift的实现" class="headerlink" title="Swift的实现"></a>Swift的实现</h3><p>在补充所有原则之前，先针对最小场景，对 <code>Swift</code> 的具体实现进行确认。我们通过生成 <code>Swift</code> 的中间语言（<code>SIL/Swift Intermediate Language</code>），来进行确认。</p>
+<p>先写一个最小的 demo：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Swift</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AA</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> test <span class="operator">=</span> <span class="number">1</span> &#123;</span><br><span class="line">      <span class="keyword">didSet</span> &#123;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span>() &#123;</span><br><span class="line">        <span class="keyword">self</span>.updateTest(<span class="number">2</span>)</span><br><span class="line">        test <span class="operator">=</span> <span class="number">3</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">func</span> <span class="title function_">updateTest</span>(<span class="keyword">_</span> <span class="params">input</span>: <span class="type">Int</span>) &#123;</span><br><span class="line">        test <span class="operator">=</span> input</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行命令，其中 <code>-Onone</code> 告诉编译器不做任何优化，方便对比。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">swiftc -emit-silgen -Onone test.swift &gt; test.sil</span><br></pre></td></tr></table></figure>
+
+<p>生成的内容有点多，直接看我们关心的部分，重点是对比 <code>init</code> 内部两行代码的差异。</p>
+<p>先检查 <code>setter</code> 做了什么，会发现是先对存储的数据赋值，再调用 <code>didSet</code> 的实际逻辑。（代码和附加注释见下方）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AA.test.setter</span></span><br><span class="line">sil hidden [ossa] @$s8Contents2AAC4testSivs : $@convention(method) (Int, @guaranteed AA) -&gt; () &#123;</span><br><span class="line"><span class="comment">// %0 &quot;value&quot;                                     // users: %6, %2</span></span><br><span class="line"><span class="comment">// %1 &quot;self&quot;                                      // users: %9, %4, %3</span></span><br><span class="line">bb0(%<span class="number">0</span> : $Int, %<span class="number">1</span> : @guaranteed $AA):</span><br><span class="line">  debug_value %<span class="number">0</span> : $Int, let, name <span class="string">&quot;value&quot;</span>, argno <span class="number">1</span>, implicit <span class="comment">// id: %2</span></span><br><span class="line">  debug_value %<span class="number">1</span> : $AA, let, name <span class="string">&quot;self&quot;</span>, argno <span class="number">2</span>, implicit <span class="comment">// id: %3</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 附加注释：以下3行是对存储数据的赋值 assign</span></span><br><span class="line">  %<span class="number">4</span> = ref_element_addr %<span class="number">1</span> : $AA, #AA.test        <span class="comment">// user: %5</span></span><br><span class="line">  %<span class="number">5</span> = begin_access [modify] [dynamic] %<span class="number">4</span> : $*Int <span class="comment">// users: %7, %6</span></span><br><span class="line">  assign %<span class="number">0</span> to %<span class="number">5</span> : $*Int                         <span class="comment">// id: %6</span></span><br><span class="line">  end_access %<span class="number">5</span> : $*Int                           <span class="comment">// id: %7</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 附加注释：这时候是调用 didset</span></span><br><span class="line">  <span class="comment">// function_ref AA.test.didset</span></span><br><span class="line">  %<span class="number">8</span> = function_ref @$s8Contents2AAC4testSivW : $@convention(method) (@guaranteed AA) -&gt; () <span class="comment">// user: %9</span></span><br><span class="line">  %<span class="number">9</span> = apply %<span class="number">8</span>(%<span class="number">1</span>) : $@convention(method) (@guaranteed AA) -&gt; ()</span><br><span class="line">  %<span class="number">10</span> = tuple ()                                  <span class="comment">// user: %11</span></span><br><span class="line">  <span class="keyword">return</span> %<span class="number">10</span> : $()                                <span class="comment">// id: %11</span></span><br><span class="line">&#125; <span class="comment">// end sil function &#x27;$s8Contents2AAC4testSivs&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后检查非构造方法，可以看出，本质就是调用了 <code>setter</code>，并且没有任何逻辑。所以说明一个重要的事实：<strong>无论从何处（包括构造函数）调用这个方法，赋值逻辑都会触发didSet</strong>。（代码和附加注释见下方）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AA.updateTest(_:)</span></span><br><span class="line">sil hidden [ossa] @$s8Contents2AAC10updateTestyySiF : $@convention(method) (Int, @guaranteed AA) -&gt; () &#123;</span><br><span class="line"><span class="comment">// %0 &quot;input&quot;                                     // users: %5, %2</span></span><br><span class="line"><span class="comment">// %1 &quot;self&quot;                                      // users: %5, %4, %3</span></span><br><span class="line">bb0(%<span class="number">0</span> : $Int, %<span class="number">1</span> : @guaranteed $AA):</span><br><span class="line">  debug_value %<span class="number">0</span> : $Int, let, name <span class="string">&quot;input&quot;</span>, argno <span class="number">1</span> <span class="comment">// id: %2</span></span><br><span class="line">  debug_value %<span class="number">1</span> : $AA, let, name <span class="string">&quot;self&quot;</span>, argno <span class="number">2</span>, implicit <span class="comment">// id: %3</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 附加注释：以下是对 setter 的调用</span></span><br><span class="line">  %<span class="number">4</span> = class_method %<span class="number">1</span> : $AA, #AA.test!setter : (AA) -&gt; (Int) -&gt; (), $@convention(method) (Int, @guaranteed AA) -&gt; () <span class="comment">// user: %5</span></span><br><span class="line">  %<span class="number">5</span> = apply %<span class="number">4</span>(%<span class="number">0</span>, %<span class="number">1</span>) : $@convention(method) (Int, @guaranteed AA) -&gt; ()</span><br><span class="line">  %<span class="number">6</span> = tuple ()                                   <span class="comment">// user: %7</span></span><br><span class="line">  <span class="keyword">return</span> %<span class="number">6</span> : $()                                 <span class="comment">// id: %7</span></span><br><span class="line">&#125; <span class="comment">// end sil function &#x27;$s8Contents2AAC10updateTestyySiF&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>最后检查 <code>init</code> 方法里，那两行的逻辑，尤其是赋值逻辑。首先调用 <code>updateTest</code> 很直接，就是方法调用。属性赋值看着很眼熟，对比下会发现和 <code>setter</code> 里调用 <code>didSet</code> 前的代码几乎完全一样。所以说明一个重要的事实：<strong>构造器里的属性赋值，是直接对存储进行赋值，并不是调用的setter</strong>。 （代码和附加注释见下方）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AA.init()</span></span><br><span class="line">sil hidden [ossa] @$s8Contents2AACACycfc : $@convention(method) (@owned AA) -&gt; @owned AA &#123;</span><br><span class="line"><span class="comment">// %0 &quot;self&quot;                                      // users: %2, %1</span></span><br><span class="line">bb0(%<span class="number">0</span> : @owned $AA):</span><br><span class="line">  debug_value %<span class="number">0</span> : $AA, let, name <span class="string">&quot;self&quot;</span>, argno <span class="number">1</span>, implicit <span class="comment">// id: %1</span></span><br><span class="line">  %<span class="number">2</span> = mark_uninitialized [rootself] %<span class="number">0</span> : $AA     <span class="comment">// users: %28, %27, %17, %9, %3</span></span><br><span class="line">  %<span class="number">3</span> = begin_borrow %<span class="number">2</span> : $AA                      <span class="comment">// users: %8, %4</span></span><br><span class="line">  %<span class="number">4</span> = ref_element_addr %<span class="number">3</span> : $AA, #AA.test        <span class="comment">// user: %7</span></span><br><span class="line">  <span class="comment">// function_ref variable initialization expression of AA.test</span></span><br><span class="line">  %<span class="number">5</span> = function_ref @$s8Contents2AAC4testSivpfi : $@convention(thin) () -&gt; Int <span class="comment">// user: %6</span></span><br><span class="line">  %<span class="number">6</span> = apply %<span class="number">5</span>() : $@convention(thin) () -&gt; Int  <span class="comment">// user: %7</span></span><br><span class="line">  store %<span class="number">6</span> to [trivial] %<span class="number">4</span> : $*Int                <span class="comment">// id: %7</span></span><br><span class="line">  end_borrow %<span class="number">3</span> : $AA                             <span class="comment">// id: %8</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 附加注释：准备调用 updateTest</span></span><br><span class="line">  %<span class="number">9</span> = begin_borrow %<span class="number">2</span> : $AA                      <span class="comment">// users: %16, %15, %14</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 附加注释：对 updateTest 的入参（整型2）做准备</span></span><br><span class="line">  %<span class="number">10</span> = integer_literal $Builtin.IntLiteral, <span class="number">2</span>    <span class="comment">// user: %13</span></span><br><span class="line">  %<span class="number">11</span> = metatype $@thin Int.Type                  <span class="comment">// user: %13</span></span><br><span class="line">  <span class="comment">// function_ref Int.init(_builtinIntegerLiteral:)</span></span><br><span class="line">  %<span class="number">12</span> = function_ref @$sSi22_builtinIntegerLiteralSiBI_tcfC : $@convention(method) (Builtin.IntLiteral, @thin Int.Type) -&gt; Int <span class="comment">// user: %13</span></span><br><span class="line">  %<span class="number">13</span> = apply %<span class="number">12</span>(%<span class="number">10</span>, %<span class="number">11</span>) : $@convention(method) (Builtin.IntLiteral, @thin Int.Type) -&gt; Int <span class="comment">// user: %15</span></span><br><span class="line">  %<span class="number">14</span> = class_method %<span class="number">9</span> : $AA, #AA.updateTest : (AA) -&gt; (Int) -&gt; (), $@convention(method) (Int, @guaranteed AA) -&gt; () <span class="comment">// user: %15</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 附加注释：调用 updateTest</span></span><br><span class="line">  %<span class="number">15</span> = apply %<span class="number">14</span>(%<span class="number">13</span>, %<span class="number">9</span>) : $@convention(method) (Int, @guaranteed AA) -&gt; ()</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 附加注释：结束调用 updateTest</span></span><br><span class="line">  end_borrow %<span class="number">9</span> : $AA                             <span class="comment">// id: %16</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 附加注释：准备属性赋值</span></span><br><span class="line">  %<span class="number">17</span> = begin_borrow %<span class="number">2</span> : $AA                     <span class="comment">// users: %26, %22</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 附加注释：对准备属性赋值的右值（整型3）做准备</span></span><br><span class="line">  %<span class="number">18</span> = integer_literal $Builtin.IntLiteral, <span class="number">3</span>    <span class="comment">// user: %21</span></span><br><span class="line">  %<span class="number">19</span> = metatype $@thin Int.Type                  <span class="comment">// user: %21</span></span><br><span class="line">  <span class="comment">// function_ref Int.init(_builtinIntegerLiteral:)</span></span><br><span class="line">  %<span class="number">20</span> = function_ref @$sSi22_builtinIntegerLiteralSiBI_tcfC : $@convention(method) (Builtin.IntLiteral, @thin Int.Type) -&gt; Int <span class="comment">// user: %21</span></span><br><span class="line">  %<span class="number">21</span> = apply %<span class="number">20</span>(%<span class="number">18</span>, %<span class="number">19</span>) : $@convention(method) (Builtin.IntLiteral, @thin Int.Type) -&gt; Int <span class="comment">// user: %24</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 附加注释：获取属性变量地址，准备赋值。留意这里是直接赋值的存储地址，并没有调用 setter 方法。</span></span><br><span class="line">  <span class="comment">// 和 setter 里调用 didSet 之前的逻辑完全一样</span></span><br><span class="line">  %<span class="number">22</span> = ref_element_addr %<span class="number">17</span> : $AA, #AA.test      <span class="comment">// user: %23</span></span><br><span class="line">  %<span class="number">23</span> = begin_access [modify] [dynamic] %<span class="number">22</span> : $*Int <span class="comment">// users: %25, %24</span></span><br><span class="line">  assign %<span class="number">21</span> to %<span class="number">23</span> : $*Int                       <span class="comment">// id: %24</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 附加备注，结束赋值</span></span><br><span class="line">  end_access %<span class="number">23</span> : $*Int                          <span class="comment">// id: %25</span></span><br><span class="line">  end_borrow %<span class="number">17</span> : $AA                            <span class="comment">// id: %26</span></span><br><span class="line">  %<span class="number">27</span> = copy_value %<span class="number">2</span> : $AA                       <span class="comment">// user: %29</span></span><br><span class="line">  destroy_value %<span class="number">2</span> : $AA                          <span class="comment">// id: %28</span></span><br><span class="line">  <span class="keyword">return</span> %<span class="number">27</span> : $AA                                <span class="comment">// id: %29</span></span><br><span class="line">&#125; <span class="comment">// end sil function &#x27;$s8Contents2AACACycfc&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里仅对最简单场景下中间代码做了分析，感兴趣的同学们，可以对其他复杂场景（比如继承、<code>block</code>）也进行分析确认。</p>
+<p>通过以上对中间代码的分析，可以得出2个重要结论，</p>
+<ol>
+<li>非构造函数里的属性赋值，会使用 <code>setter</code> 方法，进而触发 <code>didSet</code>，如果构造函数调用了该方法，也会触发，没有逻辑判断。</li>
+<li>构造函数里对自身的属性的赋值，是直接对存储赋值，不使用 <code>setter</code> 方法，所以不会触发 <code>didSet</code>，和苹果官方文档描述一致。</li>
+</ol>
+<h3 id="各场景验证"><a href="#各场景验证" class="headerlink" title="各场景验证"></a>各场景验证</h3><p>在了解了 <code>Swift</code> 的实现之后，其实我们不难猜测出对于 <code>kvc</code>、<code>block</code> 等场景下，是否会触发，实际验证如下：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Foundation</span><br><span class="line"><span class="comment">// 为方便验证 KVC 场景，直接继承自 NSObject</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AA</span>: <span class="title class_">NSObject</span> &#123;</span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">var</span> test <span class="operator">=</span> <span class="number">1</span> &#123; <span class="comment">// ❌not 初始化不触发</span></span><br><span class="line">        <span class="keyword">didSet</span> &#123;</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;AA test didSet<span class="subst">\(test)</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">init</span>() &#123;</span><br><span class="line">        test <span class="operator">=</span> <span class="number">2</span>            <span class="comment">// ❌not init 里不触发</span></span><br><span class="line">        <span class="keyword">super</span>.<span class="keyword">init</span>()</span><br><span class="line">        <span class="keyword">self</span>.test <span class="operator">=</span> <span class="number">3</span>       <span class="comment">// ❌not init 里显式写 self 也不触发</span></span><br><span class="line">        <span class="keyword">self</span>.updateTest(<span class="number">4</span>)  <span class="comment">// ✅yes init 里调方法，触发</span></span><br><span class="line">        test <span class="operator">=</span> <span class="number">5</span>            <span class="comment">// ❌not 也不触发</span></span><br><span class="line">        </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">self</span>.test <span class="operator">=</span> <span class="number">6</span>   <span class="comment">// ✅yes 触发</span></span><br><span class="line">        &#125;() <span class="comment">// 立即执行</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 以下3个等价，但需要 test 补充 @objc</span></span><br><span class="line">        <span class="keyword">self</span>.setValue(<span class="number">7</span>, forKey: <span class="string">&quot;test&quot;</span>) <span class="comment">// ✅yes</span></span><br><span class="line">        <span class="comment">// self.setValue(5, forKey: NSExpression(forKeyPath:\AA.test).keyPath) // ✅yes</span></span><br><span class="line">        <span class="comment">// self.setValue(5, forKey: #keyPath(AA.test)) // ✅yes 可以触发</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">func</span> <span class="title function_">updateTest</span>(<span class="keyword">_</span> <span class="params">input</span>: <span class="type">Int</span>) &#123;</span><br><span class="line">        test <span class="operator">=</span> input <span class="comment">// ✅yes always</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AAA</span>: <span class="title class_">AA</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> myTest: <span class="type">Int</span> <span class="operator">=</span> <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">didSet</span> &#123;</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;AAA test didSet<span class="subst">\(myTest)</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">init</span>() &#123;</span><br><span class="line">        <span class="comment">// test = 6 // ❌not &#x27;self&#x27; used in property access &#x27;test&#x27; before &#x27;super.init&#x27; call</span></span><br><span class="line">        myTest <span class="operator">=</span> <span class="number">1</span>  <span class="comment">// ❌not</span></span><br><span class="line">        <span class="keyword">super</span>.<span class="keyword">init</span>()</span><br><span class="line">        </span><br><span class="line">        myTest <span class="operator">=</span> <span class="number">2</span>  <span class="comment">// ❌not</span></span><br><span class="line">        test <span class="operator">=</span> <span class="number">9</span>    <span class="comment">// ✅yes for superclass AA</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> aaa <span class="operator">=</span> <span class="type">AAA</span>()</span><br><span class="line">aaa.test <span class="operator">=</span> <span class="number">10</span>   <span class="comment">// ✅yes 触发</span></span><br><span class="line">aaa.myTest <span class="operator">=</span> <span class="number">3</span>  <span class="comment">// ✅yes 触发</span></span><br></pre></td></tr></table></figure>
+
+<p>执行结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">AA test didSet4</span><br><span class="line">AA test didSet6</span><br><span class="line">AA test didSet7</span><br><span class="line">AA test didSet9</span><br><span class="line">AA test didSet10</span><br><span class="line">AAA test didSet3</span><br></pre></td></tr></table></figure>
+
+<p>最后稍微完善下 <code>didSet</code> 触发&#x2F;不触发的场景原则（重点留意前3条）</p>
+<ol>
+<li>默认值，不触发</li>
+<li>构造函数中赋值，不触发（仅限<strong>自身属性</strong>，非父类属性）</li>
+<li>构造函数中赋值，在子类调用 <code>super.init</code> 之后，如果对<strong>父类属性</strong>赋值，则<strong>触发</strong>（对第2点的补充）</li>
+<li>构造函数中赋值，在子类调用 <code>super.init</code> 之前，不能对父类属性赋值，编译报错</li>
+<li>构造函数中，调用其他方法对属性赋值，触发</li>
+<li>构造函数中，使用 <code>kvc</code> 对属性赋值，触发</li>
+<li>构造函数中，使用立即执行的 <code>block</code> 对属性赋值，触发</li>
+<li>非构造函数，触发，即使被构造函数调用</li>
+</ol>
+<p>简单总结，对于观察器（如<code>didSet</code>）：<strong>默认值不触发；构造函数内对自身属性(非父类属性)，直接赋值不触发，间接赋值（调用其他函数、<code>block</code>、<code>kvc</code>）依然触发；继承场景， <code>super.init</code> 后对父类属性复制，会触发父类属性的 <code>didSet</code>。</strong></p>
+<p>简化记忆，不触发 <code>didSet</code> 的场景，其他例外场景均触发，最好再特殊记一下继承场景对父类属性赋值反而会触发的情况：</p>
+<ol>
+<li>默认值</li>
+<li>构造函数内 <strong>直接</strong> 对 <strong>自有</strong> 属性赋值</li>
+</ol>
+<p>如果我们的代码比较多的使用 <code>didSet/willSet</code>，那对于构造函数<code>init</code>内部的触发场景，一定要多加小心，避免踩坑。</p>
+<h3 id="ChatGPT-的回答"><a href="#ChatGPT-的回答" class="headerlink" title="ChatGPT 的回答"></a>ChatGPT 的回答</h3><p>因为手头只有 ChatGPT3.5，没有 ChatGPT4，这里只检查了 ChatGPT3.5 的回答。</p>
+<p>针对 <code>didSet</code> 初次提问：</p>
+<ul>
+<li>构造器内直接赋值是否触发，回答正确。</li>
+<li>构造器内，对父类属性赋值是否触发，回答正确。</li>
+<li>构造函数内调用外部函数赋值是否触发，回答错误。</li>
+<li>构造函数内用<code>kvc</code>赋值是否触发，回答错误。</li>
+<li>构造函数内用<code>block</code>赋值是否触发，回答正确。但是，描述说明里，却说无论直接赋值还是使用闭包赋值，都会触发，则不正确。</li>
+</ul>
+<p>当然，如果你恐吓他（只是单纯让他再确认下），他会立马给出完全相反的答案，正确变错误、错误变正确😂。所以，慎用 ChatGPT（至少慎用3.5）来解答一些比较复杂的语言特性的问题，一定要做好验证。</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            Published on&nbsp;
+            <time datetime="2024-02-01T07:59:28.000Z" itemprop="datePublished">
+              2024-02-01
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Swift/">Swift</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+          var gitalk = new Gitalk({
+            clientID: '80bb2fb75b60505d4c6d',
+            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+            repo: 'wangqingylw.github.io.comment', // 仓库地址
+            owner: 'wangqingylw', // github 用户名
+            admin: ["wangqingylw"], // github 用户名
+            perPage: 20,
+            id: '/2024/02/01/2024-02-Swift-init-didSet/', // 查找 issus 的条件
+            title: 'Swift构造函数(init)与属性观察器(didSet)',
+            body: 'https://www.ckqing.com/2024/02/01/2024-02-Swift-init-didSet/ Swift构造函数(init)与属性观察器(didSet)'
+          });
+          gitalk.render("gitalk-container");
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2024 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+<!-- Temporarily block singlepager -->
+<!-- 
+<script src="/js/pager/dist/singlepager.js"></script>
+ -->
+<!-- <script>
+var sp = new Pager('data-pager-shell')
+</script> -->
+</body>
+</html>

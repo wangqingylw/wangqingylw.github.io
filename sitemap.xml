@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.ckqing.com/2024/02/01/2024-02-Swift-init-didSet/</loc>
+    
+    <lastmod>2024-02-01</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.ckqing.com/2024/01/18/2024-01-XLSReaderCrash/</loc>
     
     <lastmod>2024-01-18</lastmod>
@@ -292,7 +301,7 @@
 
   <url>
     <loc>https://www.ckqing.com/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -300,161 +309,161 @@
   
   <url>
     <loc>https://www.ckqing.com/tags/iOS/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/certificate/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/Crash/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/%E6%97%A5%E6%9C%AC%E8%AA%9E/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/Swift/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/vscode/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/hexo/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/ejs/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/review/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/Objective-C/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/C/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/env/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/WKWebView/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/CocoaPods/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/Extension/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/VPS/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/VPN/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/Shadowsocks/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/SwiftUI/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/Node-js/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/shell/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/JavaScript/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/tags/xls/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -463,42 +472,42 @@
   
   <url>
     <loc>https://www.ckqing.com/categories/tech/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/categories/Language-learning/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/categories/tech/iOS/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/categories/tech/hexo/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/categories/tech/shell/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://www.ckqing.com/categories/tech/JavaScript/</loc>
-    <lastmod>2024-01-18</lastmod>
+    <lastmod>2024-02-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
