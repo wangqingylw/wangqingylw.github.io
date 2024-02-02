@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="keywords" content="hexo,ejs">
+  <meta name="description" content="When Hexo Comments Dont Match Post">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>When Hexo Comments Dont Match Post | ckqing.home</title>
   
-  <link rel="icon" href="/assets/favicon.jpeg">
+  <link rel="icon" href="/assets/favicon.jpg">
   
   
   
@@ -22,7 +23,7 @@
   <!-- Gitalk -->
   
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" id="gitalk-script"></script>
   
 
   
@@ -57,7 +58,7 @@
 <div class="Shell">
     <aside class='SideBar'>
     <section class='avatar' style="background-image: url()">
-        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpg); background-repeat: no-repeat; background-size: cover">
         </div>
     </section>
     <section class='menu'>
@@ -68,45 +69,45 @@
         
         <ul>
           
-            <a href="/" class="Btn">
-              <li>Home</li>
-            </a>  
+            <li class="Btn">
+                <a href="/">Home</a>
+            </li>
           
-            <a href="/archives/" class="Btn">
-              <li>Archive</li>
-            </a>  
+            <li class="Btn">
+                <a href="/archives/">Archive</a>
+            </li>
           
-            <a href="/tags/" class="Btn">
-              <li>Tags</li>
-            </a>  
+            <li class="Btn">
+                <a href="/tags/">Tags</a>
+            </li>
           
-            <a href="/categories/" class="Btn">
-              <li>Categories</li>
-            </a>  
+            <li class="Btn">
+                <a href="/categories/">Categories</a>
+            </li>
           
-            <a href="/about/" class="Btn">
-              <li>About</li>
-            </a>  
+            <li class="Btn">
+                <a href="/about/">About</a>
+            </li>
           
         </ul>
     </section>
     <section class="media">
         
             
-                <a href="mailto:wq.cyan@gmail.com">
-                    <img src="/assets/email.svg" />
+                <a href="mailto:wq.cyan@gmail.com" aria-label="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" alt="email" />
                 </a>
             
         
             
-                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
-                    <img src="/assets/youtube.svg" />
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w" aria-label="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" alt="youtube" />
                 </a>
             
         
             
-                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
-                    <img src="/assets/bilibili.svg" />
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662" aria-label="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" alt="bilibili" />
                 </a>
             
         
@@ -163,9 +164,9 @@
 <p>This blog post documents this slightly tortuous process.</p>
 <span id="more"></span>
 
-<h2 id="background"><a href="#background" class="headerlink" title="background"></a>background</h2><p>I’ve always wanted to introduce a commenting system, preferably one that doesn’t rely too much on other 3rd party services.</p>
+<h1 id="background"><a href="#background" class="headerlink" title="background"></a>background</h1><p>I’ve always wanted to introduce a commenting system, preferably one that doesn’t rely too much on other 3rd party services.</p>
 <p>In the end I chose <strong><a target="_blank" rel="noopener" href="https://github.com/gitalk/gitalk" title="Gitalk Homepage">Gitalk</a></strong>. <strong>Gitalk</strong> is great, convenient, and fits my needs perfectly.</p>
-<h2 id="process"><a href="#process" class="headerlink" title="process"></a>process</h2><p>The introduction was very smooth. After referring to the official website and other people’s articles, I successfully introduced it in my blog.</p>
+<h1 id="process"><a href="#process" class="headerlink" title="process"></a>process</h1><p>The introduction was very smooth. After referring to the official website and other people’s articles, I successfully introduced it in my blog.</p>
 <p>Similar to others, my approach is to introduce the relevant code in the <code>content-view.ejs</code> section of the layout of my hexo <code>theme</code>.(Some themes may have a separate <code>comment.ejs</code> file.)</p>
 <p>Just like the following code.</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- gitalk --&gt;</span><br><span class="line">&lt;% <span class="keyword">if</span> (theme.<span class="property">gitalk</span>.<span class="property">enable</span> === <span class="string">&#x27;all&#x27;</span> || (theme.<span class="property">gitalk</span>.<span class="property">enable</span> === <span class="string">&#x27;post&#x27;</span> &amp;&amp; !isPage)) &#123; %&gt;</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">section</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;gitalk-container&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="language-javascript"></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">      <span class="keyword">var</span> gitalk = <span class="keyword">new</span> <span class="title class_">Gitalk</span>(&#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="attr">clientID</span>: <span class="string">&#x27;&lt;%= theme.gitalk.clientID %&gt;&#x27;</span>,</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="attr">clientSecret</span>: <span class="string">&#x27;&lt;%= theme.gitalk.clientSecret %&gt;&#x27;</span>,</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="attr">repo</span>: <span class="string">&#x27;&lt;%= theme.gitalk.repo %&gt;&#x27;</span>,</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="attr">owner</span>: <span class="string">&#x27;&lt;%= theme.gitalk.owner %&gt;&#x27;</span>,</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="attr">admin</span>: &lt;%- <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(theme.<span class="property">gitalk</span>.<span class="property">admin</span>) %&gt;,</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="attr">perPage</span>: <span class="number">20</span>,</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="comment">// ↓↓↓pay attention to this line</span></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="attr">id</span>: <span class="variable language_">window</span>.<span class="property">location</span>.<span class="property">pathname</span>.<span class="title function_">slice</span>(<span class="number">0</span>, <span class="number">50</span>),</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="attr">title</span>: <span class="string">&#x27;&lt;%= page.title %&gt;&#x27;</span>,</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="attr">body</span>: <span class="string">&#x27;&lt;%= page.permalink + &quot; &quot; + page.title %&gt;&#x27;</span></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">      &#125;);</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">      gitalk.<span class="title function_">render</span>(<span class="string">&quot;gitalk-container&quot;</span>);</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;/<span class="name">section</span>&gt;</span></span></span><br><span class="line">&lt;% &#125; %&gt;</span><br></pre></td></tr></table></figure>
@@ -184,7 +185,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// wrong code</span></span><br><span class="line"><span class="attr">id</span>: <span class="variable language_">window</span>.<span class="property">location</span>.<span class="property">pathname</span>.<span class="title function_">slice</span>(<span class="number">0</span>, <span class="number">50</span>),</span><br><span class="line"></span><br><span class="line"><span class="comment">// correct code</span></span><br><span class="line"><span class="attr">id</span>: <span class="string">&#x27;&lt;%= url_for(page.path).slice(0, 50) %&gt;&#x27;</span>,</span><br></pre></td></tr></table></figure>
 
 <p>In this way, the correct page path will be generated directly into the <strong>html code</strong> without relying on the <code>JavaScript</code> to get it at runtime.</p>
-<h2 id="finally"><a href="#finally" class="headerlink" title="finally"></a>finally</h2><p>The essence of this problem is due to the <strong>partial refresh</strong> of the hexo page jump and the way <strong>Gitalk</strong> comment id is generated.</p>
+<h1 id="finally"><a href="#finally" class="headerlink" title="finally"></a>finally</h1><p>The essence of this problem is due to the <strong>partial refresh</strong> of the hexo page jump and the way <strong>Gitalk</strong> comment id is generated.</p>
 <p>Now, the comment system of my blog can finally work smoothly. More comments, suggestions and opinions are <strong>welcome</strong>. <strong>grateful</strong>.</p>
 
 
@@ -201,7 +202,7 @@
           </div>
           
             <div>
-              tags: 
+              tags: <ul class="TagsInline">
   <li class="meta-text">
   { <a href="/tags/hexo/">hexo</a> }
   </li>
@@ -210,7 +211,7 @@
   { <a href="/tags/ejs/">ejs</a> }
   </li>
 
-
+</ul>
             </div>
           
       </section>
@@ -225,19 +226,25 @@
         <div id="gitalk-container"></div>
 
         <script type="text/javascript">
-          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
-          var gitalk = new Gitalk({
-            clientID: '80bb2fb75b60505d4c6d',
-            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
-            repo: 'wangqingylw.github.io.comment', // 仓库地址
-            owner: 'wangqingylw', // github 用户名
-            admin: ["wangqingylw"], // github 用户名
-            perPage: 20,
-            id: '/2022/08/31/hexo-comments-mismatch/', // 查找 issus 的条件
-            title: 'When Hexo Comments Dont Match Post',
-            body: 'https://www.ckqing.com/2022/08/31/hexo-comments-mismatch/ When Hexo Comments Dont Match Post'
-          });
-          gitalk.render("gitalk-container");
+          var gitalkScript = document.getElementById('gitalk-script');
+
+          if (gitalkScript) {
+            gitalkScript.onload = function() {
+              /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+              var gitalk = new Gitalk({
+                clientID: '80bb2fb75b60505d4c6d',
+                clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+                repo: 'wangqingylw.github.io.comment', // 仓库地址
+                owner: 'wangqingylw', // github 用户名
+                admin: ["wangqingylw"], // github 用户名
+                perPage: 20,
+                id: '/2022/08/31/hexo-comments-mismatch/', // 查找 issus 的条件
+                title: 'When Hexo Comments Dont Match Post',
+                body: 'https://www.ckqing.com/2022/08/31/hexo-comments-mismatch/ When Hexo Comments Dont Match Post'
+              });
+              gitalk.render("gitalk-container");
+            };
+          }
         </script>
       </section>
     

@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="keywords" content="ObjC,didSet,SIL,ChatGPT">
+  <meta name="description" content="针对 Swift 开发终于到的构造函数中是否触发属性观察器(didSet)问题进行深入分析">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Swift构造函数(init)与属性观察器(didSet) | ckqing.home</title>
   
-  <link rel="icon" href="/assets/favicon.jpeg">
+  <link rel="icon" href="/assets/favicon.jpg">
   
   
   
@@ -22,7 +23,7 @@
   <!-- Gitalk -->
   
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" id="gitalk-script"></script>
   
 
   
@@ -57,7 +58,7 @@
 <div class="Shell">
     <aside class='SideBar'>
     <section class='avatar' style="background-image: url()">
-        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpg); background-repeat: no-repeat; background-size: cover">
         </div>
     </section>
     <section class='menu'>
@@ -68,45 +69,45 @@
         
         <ul>
           
-            <a href="/" class="Btn">
-              <li>Home</li>
-            </a>  
+            <li class="Btn">
+                <a href="/">Home</a>
+            </li>
           
-            <a href="/archives/" class="Btn">
-              <li>Archive</li>
-            </a>  
+            <li class="Btn">
+                <a href="/archives/">Archive</a>
+            </li>
           
-            <a href="/tags/" class="Btn">
-              <li>Tags</li>
-            </a>  
+            <li class="Btn">
+                <a href="/tags/">Tags</a>
+            </li>
           
-            <a href="/categories/" class="Btn">
-              <li>Categories</li>
-            </a>  
+            <li class="Btn">
+                <a href="/categories/">Categories</a>
+            </li>
           
-            <a href="/about/" class="Btn">
-              <li>About</li>
-            </a>  
+            <li class="Btn">
+                <a href="/about/">About</a>
+            </li>
           
         </ul>
     </section>
     <section class="media">
         
             
-                <a href="mailto:wq.cyan@gmail.com">
-                    <img src="/assets/email.svg" />
+                <a href="mailto:wq.cyan@gmail.com" aria-label="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" alt="email" />
                 </a>
             
         
             
-                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
-                    <img src="/assets/youtube.svg" />
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w" aria-label="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" alt="youtube" />
                 </a>
             
         
             
-                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
-                    <img src="/assets/bilibili.svg" />
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662" aria-label="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" alt="bilibili" />
                 </a>
             
         
@@ -163,7 +164,7 @@
 <blockquote>
 <p>环境<br>Xcode 15.2<br>Swift 5.9</p>
 </blockquote>
-<h3 id="有关属性赋值"><a href="#有关属性赋值" class="headerlink" title="有关属性赋值"></a>有关属性赋值</h3><p>大家都很熟悉 <code>ObjC</code> 里对属性赋值，一般有2种，一种是<code>点操作符</code>（即 <code>a.x = 1</code>），一种是直接对成员变量 <code>ivar</code> 赋值（即 <code>_x = 1</code>）。</p>
+<h1 id="有关属性赋值"><a href="#有关属性赋值" class="headerlink" title="有关属性赋值"></a>有关属性赋值</h1><p>大家都很熟悉 <code>ObjC</code> 里对属性赋值，一般有2种，一种是<code>点操作符</code>（即 <code>a.x = 1</code>），一种是直接对成员变量 <code>ivar</code> 赋值（即 <code>_x = 1</code>）。</p>
 <p>大家都很熟悉 <code>@property = ivar + setter + getter</code>，而<code>点操作符</code>实际是<code>setter/getter</code>的语法糖。</p>
 <p>进而有常见的初级面试题：</p>
 <blockquote>
@@ -176,7 +177,7 @@
 
 <p>但是 <code>Swift</code> 里并没有区分 <code>点操作符</code> 和 <code>成员变量直接赋值</code> 2种逻辑，即使不显示标注 <code>self</code> 也是相同的逻辑，所以大家倾向于统一当做都是类似 <code>ObjC</code> 的 <code>点操作符</code>，即 <code>setter</code> 方法。</p>
 <p>然而事实上在<code>默认值</code>、构造函数（<code>init</code>）等场景下，其实是 <strong>不会触发</strong> <code>didSet</code> 等方法的，有些同学是完全不知道，有些同学是知道，但经常想不起来。</p>
-<h3 id="苹果的解释"><a href="#苹果的解释" class="headerlink" title="苹果的解释"></a>苹果的解释</h3><p>先看看苹果官方的描述，有2段来源，一段是关于<code>属性/(properties)</code>的描述，另一段是关于<code>构造函数</code>的描述。</p>
+<h1 id="苹果的解释"><a href="#苹果的解释" class="headerlink" title="苹果的解释"></a>苹果的解释</h1><p>先看看苹果官方的描述，有2段来源，一段是关于<code>属性/(properties)</code>的描述，另一段是关于<code>构造函数</code>的描述。</p>
 <p><a target="_blank" rel="noopener" href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/properties/">The Swift Programming Language (5.9.2)&#x2F;Properties</a></p>
 <blockquote>
 <p>Note<br>The willSet and didSet observers of superclass properties are called when a property is set in a subclass initializer, after the superclass initializer has been called. They aren’t called while a class is setting its own properties, before the superclass initializer has been called.</p>
@@ -211,7 +212,7 @@
 </blockquote>
 </li>
 </ol>
-<h3 id="Swift的实现"><a href="#Swift的实现" class="headerlink" title="Swift的实现"></a>Swift的实现</h3><p>在补充所有原则之前，先针对最小场景，对 <code>Swift</code> 的具体实现进行确认。我们通过生成 <code>Swift</code> 的中间语言（<code>SIL/Swift Intermediate Language</code>），来进行确认。</p>
+<h1 id="Swift的实现"><a href="#Swift的实现" class="headerlink" title="Swift的实现"></a>Swift的实现</h1><p>在补充所有原则之前，先针对最小场景，对 <code>Swift</code> 的具体实现进行确认。我们通过生成 <code>Swift</code> 的中间语言（<code>SIL/Swift Intermediate Language</code>），来进行确认。</p>
 <p>先写一个最小的 demo：</p>
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Swift</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AA</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> test <span class="operator">=</span> <span class="number">1</span> &#123;</span><br><span class="line">      <span class="keyword">didSet</span> &#123;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span>() &#123;</span><br><span class="line">        <span class="keyword">self</span>.updateTest(<span class="number">2</span>)</span><br><span class="line">        test <span class="operator">=</span> <span class="number">3</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">func</span> <span class="title function_">updateTest</span>(<span class="keyword">_</span> <span class="params">input</span>: <span class="type">Int</span>) &#123;</span><br><span class="line">        test <span class="operator">=</span> input</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -234,7 +235,7 @@
 <li>非构造函数里的属性赋值，会使用 <code>setter</code> 方法，进而触发 <code>didSet</code>，如果构造函数调用了该方法，也会触发，没有逻辑判断。</li>
 <li>构造函数里对自身的属性的赋值，是直接对存储赋值，不使用 <code>setter</code> 方法，所以不会触发 <code>didSet</code>，和苹果官方文档描述一致。</li>
 </ol>
-<h3 id="各场景验证"><a href="#各场景验证" class="headerlink" title="各场景验证"></a>各场景验证</h3><p>在了解了 <code>Swift</code> 的实现之后，其实我们不难猜测出对于 <code>kvc</code>、<code>block</code> 等场景下，是否会触发，实际验证如下：</p>
+<h1 id="各场景验证"><a href="#各场景验证" class="headerlink" title="各场景验证"></a>各场景验证</h1><p>在了解了 <code>Swift</code> 的实现之后，其实我们不难猜测出对于 <code>kvc</code>、<code>block</code> 等场景下，是否会触发，实际验证如下：</p>
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Foundation</span><br><span class="line"><span class="comment">// 为方便验证 KVC 场景，直接继承自 NSObject</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AA</span>: <span class="title class_">NSObject</span> &#123;</span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">var</span> test <span class="operator">=</span> <span class="number">1</span> &#123; <span class="comment">// ❌not 初始化不触发</span></span><br><span class="line">        <span class="keyword">didSet</span> &#123;</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;AA test didSet<span class="subst">\(test)</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">init</span>() &#123;</span><br><span class="line">        test <span class="operator">=</span> <span class="number">2</span>            <span class="comment">// ❌not init 里不触发</span></span><br><span class="line">        <span class="keyword">super</span>.<span class="keyword">init</span>()</span><br><span class="line">        <span class="keyword">self</span>.test <span class="operator">=</span> <span class="number">3</span>       <span class="comment">// ❌not init 里显式写 self 也不触发</span></span><br><span class="line">        <span class="keyword">self</span>.updateTest(<span class="number">4</span>)  <span class="comment">// ✅yes init 里调方法，触发</span></span><br><span class="line">        test <span class="operator">=</span> <span class="number">5</span>            <span class="comment">// ❌not 也不触发</span></span><br><span class="line">        </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">self</span>.test <span class="operator">=</span> <span class="number">6</span>   <span class="comment">// ✅yes 触发</span></span><br><span class="line">        &#125;() <span class="comment">// 立即执行</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 以下3个等价，但需要 test 补充 @objc</span></span><br><span class="line">        <span class="keyword">self</span>.setValue(<span class="number">7</span>, forKey: <span class="string">&quot;test&quot;</span>) <span class="comment">// ✅yes</span></span><br><span class="line">        <span class="comment">// self.setValue(5, forKey: NSExpression(forKeyPath:\AA.test).keyPath) // ✅yes</span></span><br><span class="line">        <span class="comment">// self.setValue(5, forKey: #keyPath(AA.test)) // ✅yes 可以触发</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">func</span> <span class="title function_">updateTest</span>(<span class="keyword">_</span> <span class="params">input</span>: <span class="type">Int</span>) &#123;</span><br><span class="line">        test <span class="operator">=</span> input <span class="comment">// ✅yes always</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AAA</span>: <span class="title class_">AA</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> myTest: <span class="type">Int</span> <span class="operator">=</span> <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">didSet</span> &#123;</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;AAA test didSet<span class="subst">\(myTest)</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">init</span>() &#123;</span><br><span class="line">        <span class="comment">// test = 6 // ❌not &#x27;self&#x27; used in property access &#x27;test&#x27; before &#x27;super.init&#x27; call</span></span><br><span class="line">        myTest <span class="operator">=</span> <span class="number">1</span>  <span class="comment">// ❌not</span></span><br><span class="line">        <span class="keyword">super</span>.<span class="keyword">init</span>()</span><br><span class="line">        </span><br><span class="line">        myTest <span class="operator">=</span> <span class="number">2</span>  <span class="comment">// ❌not</span></span><br><span class="line">        test <span class="operator">=</span> <span class="number">9</span>    <span class="comment">// ✅yes for superclass AA</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> aaa <span class="operator">=</span> <span class="type">AAA</span>()</span><br><span class="line">aaa.test <span class="operator">=</span> <span class="number">10</span>   <span class="comment">// ✅yes 触发</span></span><br><span class="line">aaa.myTest <span class="operator">=</span> <span class="number">3</span>  <span class="comment">// ✅yes 触发</span></span><br></pre></td></tr></table></figure>
 
 <p>执行结果</p>
@@ -258,7 +259,7 @@
 <li>构造函数内 <strong>直接</strong> 对 <strong>自有</strong> 属性赋值</li>
 </ol>
 <p>如果我们的代码比较多的使用 <code>didSet/willSet</code>，那对于构造函数<code>init</code>内部的触发场景，一定要多加小心，避免踩坑。</p>
-<h3 id="ChatGPT-的回答"><a href="#ChatGPT-的回答" class="headerlink" title="ChatGPT 的回答"></a>ChatGPT 的回答</h3><p>因为手头只有 ChatGPT3.5，没有 ChatGPT4，这里只检查了 ChatGPT3.5 的回答。</p>
+<h1 id="ChatGPT-的回答"><a href="#ChatGPT-的回答" class="headerlink" title="ChatGPT 的回答"></a>ChatGPT 的回答</h1><p>因为手头只有 ChatGPT3.5，没有 ChatGPT4，这里只检查了 ChatGPT3.5 的回答。</p>
 <p>针对 <code>didSet</code> 初次提问：</p>
 <ul>
 <li>构造器内直接赋值是否触发，回答正确。</li>
@@ -283,7 +284,7 @@
           </div>
           
             <div>
-              tags: 
+              tags: <ul class="TagsInline">
   <li class="meta-text">
   { <a href="/tags/iOS/">iOS</a> }
   </li>
@@ -292,7 +293,7 @@
   { <a href="/tags/Swift/">Swift</a> }
   </li>
 
-
+</ul>
             </div>
           
       </section>
@@ -307,19 +308,25 @@
         <div id="gitalk-container"></div>
 
         <script type="text/javascript">
-          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
-          var gitalk = new Gitalk({
-            clientID: '80bb2fb75b60505d4c6d',
-            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
-            repo: 'wangqingylw.github.io.comment', // 仓库地址
-            owner: 'wangqingylw', // github 用户名
-            admin: ["wangqingylw"], // github 用户名
-            perPage: 20,
-            id: '/2024/02/01/2024-02-Swift-init-didSet/', // 查找 issus 的条件
-            title: 'Swift构造函数(init)与属性观察器(didSet)',
-            body: 'https://www.ckqing.com/2024/02/01/2024-02-Swift-init-didSet/ Swift构造函数(init)与属性观察器(didSet)'
-          });
-          gitalk.render("gitalk-container");
+          var gitalkScript = document.getElementById('gitalk-script');
+
+          if (gitalkScript) {
+            gitalkScript.onload = function() {
+              /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+              var gitalk = new Gitalk({
+                clientID: '80bb2fb75b60505d4c6d',
+                clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+                repo: 'wangqingylw.github.io.comment', // 仓库地址
+                owner: 'wangqingylw', // github 用户名
+                admin: ["wangqingylw"], // github 用户名
+                perPage: 20,
+                id: '/2024/02/01/2024-02-Swift-init-didSet/', // 查找 issus 的条件
+                title: 'Swift构造函数(init)与属性观察器(didSet)',
+                body: 'https://www.ckqing.com/2024/02/01/2024-02-Swift-init-didSet/ Swift构造函数(init)与属性观察器(didSet)'
+              });
+              gitalk.render("gitalk-container");
+            };
+          }
         </script>
       </section>
     

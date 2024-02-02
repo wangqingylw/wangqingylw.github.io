@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="keywords" content="iOS,Swift">
+  <meta name="description" content="浅谈当Swift中defer和inout同时起作用">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>浅谈当Swift中defer和inout同时起作用 | ckqing.home</title>
   
-  <link rel="icon" href="/assets/favicon.jpeg">
+  <link rel="icon" href="/assets/favicon.jpg">
   
   
   
@@ -22,7 +23,7 @@
   <!-- Gitalk -->
   
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" id="gitalk-script"></script>
   
 
   
@@ -57,7 +58,7 @@
 <div class="Shell">
     <aside class='SideBar'>
     <section class='avatar' style="background-image: url()">
-        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpg); background-repeat: no-repeat; background-size: cover">
         </div>
     </section>
     <section class='menu'>
@@ -68,45 +69,45 @@
         
         <ul>
           
-            <a href="/" class="Btn">
-              <li>Home</li>
-            </a>  
+            <li class="Btn">
+                <a href="/">Home</a>
+            </li>
           
-            <a href="/archives/" class="Btn">
-              <li>Archive</li>
-            </a>  
+            <li class="Btn">
+                <a href="/archives/">Archive</a>
+            </li>
           
-            <a href="/tags/" class="Btn">
-              <li>Tags</li>
-            </a>  
+            <li class="Btn">
+                <a href="/tags/">Tags</a>
+            </li>
           
-            <a href="/categories/" class="Btn">
-              <li>Categories</li>
-            </a>  
+            <li class="Btn">
+                <a href="/categories/">Categories</a>
+            </li>
           
-            <a href="/about/" class="Btn">
-              <li>About</li>
-            </a>  
+            <li class="Btn">
+                <a href="/about/">About</a>
+            </li>
           
         </ul>
     </section>
     <section class="media">
         
             
-                <a href="mailto:wq.cyan@gmail.com">
-                    <img src="/assets/email.svg" />
+                <a href="mailto:wq.cyan@gmail.com" aria-label="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" alt="email" />
                 </a>
             
         
             
-                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
-                    <img src="/assets/youtube.svg" />
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w" aria-label="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" alt="youtube" />
                 </a>
             
         
             
-                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
-                    <img src="/assets/bilibili.svg" />
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662" aria-label="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" alt="bilibili" />
                 </a>
             
         
@@ -163,7 +164,7 @@
 </blockquote>
 <span id="more"></span>
 
-<h2 id="inout和defer"><a href="#inout和defer" class="headerlink" title="inout和defer"></a>inout和defer</h2><h3 id="inout"><a href="#inout" class="headerlink" title="inout"></a>inout</h3><p>有关 <code>inout</code> 关键字苹果官方描述</p>
+<h1 id="inout和defer"><a href="#inout和defer" class="headerlink" title="inout和defer"></a>inout和defer</h1><h2 id="inout"><a href="#inout" class="headerlink" title="inout"></a>inout</h2><p>有关 <code>inout</code> 关键字苹果官方描述</p>
 <blockquote>
 <p>If you want a function to modify a parameter’s value, and you want those changes to persist after the function call has ended, define that parameter as an in-out parameter instead.</p>
 </blockquote>
@@ -188,7 +189,7 @@
 <blockquote>
 <p>对于对象，即非 <code>Swift</code> 类型的，因为本身即为指针，所以本身就是指针传递，函数内部调用对象方法进行操作进而导致对象内部值的变化时，并不需要 <code>inout</code> 关键字。但是如果你想对这个对象变量整体进行的赋值替换操作，并且能反应到外部时，就需要 <code>inout</code>。<br>本文为了方便讨论，此处以及后续将仅仅以 <code>Swift</code> 原生类型作为例子。</p>
 </blockquote>
-<h3 id="defer"><a href="#defer" class="headerlink" title="defer"></a>defer</h3><p>有关 <code>defer</code> 关键字苹果官方的描述</p>
+<h2 id="defer"><a href="#defer" class="headerlink" title="defer"></a>defer</h2><p>有关 <code>defer</code> 关键字苹果官方的描述</p>
 <blockquote>
 <p>A defer statement is used for executing code just before transferring program control outside of the scope that the defer statement appears in.</p>
 </blockquote>
@@ -200,7 +201,7 @@
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">func</span> <span class="title function_">g</span>() &#123;</span><br><span class="line">    <span class="keyword">defer</span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;do defer&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;do func&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;func done&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">g()</span><br><span class="line"><span class="comment">/* 输出结果</span></span><br><span class="line"><span class="comment">do func</span></span><br><span class="line"><span class="comment">func done</span></span><br><span class="line"><span class="comment">do defer</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
 
 <p>这里注意一下， <code>defer</code> 的生效时机是 <code>scope</code> 离开的时候，而 <strong>不是函数执行完毕</strong> 的时候。 所以如果 <code>defer</code> 写在 <code>if</code> 或者 <code>for</code> 的内部， 会在 <code>if</code> 结束的时候立刻执行。</p>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>因为很多写 <code>Swift</code> 的同学都是从 <code>Objective-C</code> 过来的，从使用习惯上来说，用 <code>inout</code> 会多一些， <code>defer</code> 并不太多。 但是当 <code>inout</code> 和 <code>defer</code> 以及 <code>return</code> 共同起作用的时候往往会有一些微妙的问题。</p>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>因为很多写 <code>Swift</code> 的同学都是从 <code>Objective-C</code> 过来的，从使用习惯上来说，用 <code>inout</code> 会多一些， <code>defer</code> 并不太多。 但是当 <code>inout</code> 和 <code>defer</code> 以及 <code>return</code> 共同起作用的时候往往会有一些微妙的问题。</p>
 <ol>
 <li><code>defer</code> 本身是个 <code>block</code>，他内部也是可以修改变量。比如：<br><code>defer &#123; x += 1 &#125;</code></li>
 <li><code>return</code> 的时候，也是可以执行一个 <code>block</code> 的。 比如 <code>return &#123; x + 1 &#125;()</code>，同时自身也会往栈上压入值</li>
@@ -220,7 +221,7 @@
 <li><code>fdo</code> 返回的值是多少</li>
 <li>最后的 <code>outX</code> 值又是多少</li>
 </ol>
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>为了能知道结果，对上述代码进行扩充</p>
+<h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><p>为了能知道结果，对上述代码进行扩充</p>
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">func</span> <span class="title function_">print</span>(<span class="params">tag</span>: <span class="type">String</span>,  <span class="params">v</span>:<span class="type">Int</span>) &#123;</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;<span class="subst">\(tag)</span>:<span class="subst">\t</span><span class="subst">\(v)</span>&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">func</span> <span class="title function_">fdo</span>(<span class="params">x</span>: <span class="keyword">inout</span> <span class="type">Int</span>) -&gt; <span class="type">Int</span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(tag: <span class="string">&quot;st-def&quot;</span>, v: x)</span><br><span class="line">        x <span class="operator">+=</span> <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span>(tag: <span class="string">&quot;ed-def&quot;</span>, v: x)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">print</span>(tag: <span class="string">&quot;st-fdo&quot;</span>, v: x)</span><br><span class="line">    x <span class="operator">+=</span> <span class="number">1</span></span><br><span class="line">    <span class="built_in">print</span>(tag: <span class="string">&quot;ed-fdo&quot;</span>, v: x)</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(tag: <span class="string">&quot;st-ret&quot;</span>, v: x)</span><br><span class="line">        x <span class="operator">+=</span> <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span>(tag: <span class="string">&quot;ed-ret&quot;</span>, v: x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> outX: <span class="type">Int</span> <span class="operator">=</span> <span class="number">10</span></span><br><span class="line"><span class="built_in">print</span>(tag: <span class="string">&quot;x-before&quot;</span>, v: outX)</span><br><span class="line"><span class="built_in">print</span>(tag: <span class="string">&quot;v-return&quot;</span>, v: fdo(x: <span class="operator">&amp;</span>outX)) <span class="comment">// 如果代码改成 outX = fdo(x: &amp;outX)，下一行会如何？ 和现在会一样吗</span></span><br><span class="line"><span class="built_in">print</span>(tag: <span class="string">&quot;x-after&quot;</span>, v: outX)</span><br></pre></td></tr></table></figure>
 
 <p>输出如下：</p>
@@ -254,7 +255,7 @@
 </li>
 <li><strong>函数调用</strong> 所在的代码行生效，使用 <code>return</code> 返回的值对外操作，如外赋值、打印等等</li>
 </ol>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>从实际的实现角度来说，执行顺序是:<br><strong>return中代码</strong> -&gt; <code>defer</code> -&gt; <code>return</code> -&gt; <code>inout</code> -&gt; <strong>调用处代码</strong></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>从实际的实现角度来说，执行顺序是:<br><strong>return中代码</strong> -&gt; <code>defer</code> -&gt; <code>return</code> -&gt; <code>inout</code> -&gt; <strong>调用处代码</strong></p>
 <p>从变量和内存的角度考虑</p>
 <ol>
 <li><code>Swift</code> 是写时拷贝</li>
@@ -266,7 +267,7 @@
 <li>对于 <code>inout</code> ，需要了解执行的机制，不能根据现象对机制有所误判。</li>
 <li>建议尽量少用 <strong>副作用</strong> 来达成一些预期，如在函数中过多的对外部变量进行修改，尤其是值类型的变量。</li>
 </ol>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
 <li><a target="_blank" rel="noopener" href="https://onevcat.com/2018/11/defer/">关于 Swift defer 的正确使用</a></li>
 <li><a target="_blank" rel="noopener" href="https://docs.swift.org/swift-book/LanguageGuide/Functions.html">Swift Language Guide</a></li>
 <li><a target="_blank" rel="noopener" href="https://docs.swift.org/swift-book/ReferenceManual/Statements.html#grammar_defer-statement">Swift Language Reference - Statements - defer</a></li>
@@ -287,7 +288,7 @@
           </div>
           
             <div>
-              tags: 
+              tags: <ul class="TagsInline">
   <li class="meta-text">
   { <a href="/tags/iOS/">iOS</a> }
   </li>
@@ -296,7 +297,7 @@
   { <a href="/tags/Swift/">Swift</a> }
   </li>
 
-
+</ul>
             </div>
           
       </section>
@@ -311,19 +312,25 @@
         <div id="gitalk-container"></div>
 
         <script type="text/javascript">
-          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
-          var gitalk = new Gitalk({
-            clientID: '80bb2fb75b60505d4c6d',
-            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
-            repo: 'wangqingylw.github.io.comment', // 仓库地址
-            owner: 'wangqingylw', // github 用户名
-            admin: ["wangqingylw"], // github 用户名
-            perPage: 20,
-            id: '/2019/02/20/swift-defer-inout/', // 查找 issus 的条件
-            title: '浅谈当Swift中defer和inout同时起作用',
-            body: 'https://www.ckqing.com/2019/02/20/swift-defer-inout/ 浅谈当Swift中defer和inout同时起作用'
-          });
-          gitalk.render("gitalk-container");
+          var gitalkScript = document.getElementById('gitalk-script');
+
+          if (gitalkScript) {
+            gitalkScript.onload = function() {
+              /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+              var gitalk = new Gitalk({
+                clientID: '80bb2fb75b60505d4c6d',
+                clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+                repo: 'wangqingylw.github.io.comment', // 仓库地址
+                owner: 'wangqingylw', // github 用户名
+                admin: ["wangqingylw"], // github 用户名
+                perPage: 20,
+                id: '/2019/02/20/swift-defer-inout/', // 查找 issus 的条件
+                title: '浅谈当Swift中defer和inout同时起作用',
+                body: 'https://www.ckqing.com/2019/02/20/swift-defer-inout/ 浅谈当Swift中defer和inout同时起作用'
+              });
+              gitalk.render("gitalk-container");
+            };
+          }
         </script>
       </section>
     

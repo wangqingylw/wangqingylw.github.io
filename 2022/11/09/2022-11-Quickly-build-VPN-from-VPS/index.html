@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="keywords" content="VPS,VPN,Shadowsocks">
+  <meta name="description" content="Quickly build VPN from VPS">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Quickly build VPN from VPS | ckqing.home</title>
   
-  <link rel="icon" href="/assets/favicon.jpeg">
+  <link rel="icon" href="/assets/favicon.jpg">
   
   
   
@@ -22,7 +23,7 @@
   <!-- Gitalk -->
   
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" id="gitalk-script"></script>
   
 
   
@@ -57,7 +58,7 @@
 <div class="Shell">
     <aside class='SideBar'>
     <section class='avatar' style="background-image: url()">
-        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpg); background-repeat: no-repeat; background-size: cover">
         </div>
     </section>
     <section class='menu'>
@@ -68,45 +69,45 @@
         
         <ul>
           
-            <a href="/" class="Btn">
-              <li>Home</li>
-            </a>  
+            <li class="Btn">
+                <a href="/">Home</a>
+            </li>
           
-            <a href="/archives/" class="Btn">
-              <li>Archive</li>
-            </a>  
+            <li class="Btn">
+                <a href="/archives/">Archive</a>
+            </li>
           
-            <a href="/tags/" class="Btn">
-              <li>Tags</li>
-            </a>  
+            <li class="Btn">
+                <a href="/tags/">Tags</a>
+            </li>
           
-            <a href="/categories/" class="Btn">
-              <li>Categories</li>
-            </a>  
+            <li class="Btn">
+                <a href="/categories/">Categories</a>
+            </li>
           
-            <a href="/about/" class="Btn">
-              <li>About</li>
-            </a>  
+            <li class="Btn">
+                <a href="/about/">About</a>
+            </li>
           
         </ul>
     </section>
     <section class="media">
         
             
-                <a href="mailto:wq.cyan@gmail.com">
-                    <img src="/assets/email.svg" />
+                <a href="mailto:wq.cyan@gmail.com" aria-label="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" alt="email" />
                 </a>
             
         
             
-                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
-                    <img src="/assets/youtube.svg" />
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w" aria-label="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" alt="youtube" />
                 </a>
             
         
             
-                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
-                    <img src="/assets/bilibili.svg" />
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662" aria-label="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" alt="bilibili" />
                 </a>
             
         
@@ -165,10 +166,10 @@
 <p>For some reason, we may often need to change the IP, and we can usually use the mirroring method to save and quickly restore the environment we have built.</p>
 <p>But sometimes we may still need to do it ourselves. Here is a brief description of a quick way to build a <strong>VPN</strong> from a <strong>VPS</strong>, and I leave it for myself as a reference.</p>
 <p>In terms of security, it is better to build a complete <strong>L2TP VPN</strong>, but the construction process will be more troublesome. If it is just for quick construction, simple <strong>SS (shadowsocks)</strong> may be more suitable.</p>
-<h3 id="VPS"><a href="#VPS" class="headerlink" title="VPS"></a>VPS</h3><h4 id="1-Create-a-VPS-server"><a href="#1-Create-a-VPS-server" class="headerlink" title="1. Create a VPS server."></a>1. Create a VPS server.</h4><p>The first step is to create a VPS server. </p>
+<h1 id="VPS"><a href="#VPS" class="headerlink" title="VPS"></a>VPS</h1><h2 id="1-Create-a-VPS-server"><a href="#1-Create-a-VPS-server" class="headerlink" title="1. Create a VPS server."></a>1. Create a VPS server.</h2><p>The first step is to create a VPS server. </p>
 <p>I personally use the VPS service provided by <strong><a target="_blank" rel="noopener" href="https://www.linode.com/lp/refer/?r=63d0778f9703958d49ae33033a49729c21219e61" title="Linode">Linode</a></strong>, similar to other service providers.</p>
 <p>For convenience, it is recommended to choose the <strong>CentOS</strong> operating system.</p>
-<h4 id="2-Modify-SSH-port"><a href="#2-Modify-SSH-port" class="headerlink" title="2. Modify SSH port"></a>2. Modify <strong>SSH</strong> port</h4><p>For security reasons, it is recommended to modify the port of <strong>SSH</strong>. I personally think this step is <strong>necessary</strong>, otherwise it will be very annoying to be tried to log in every day.</p>
+<h2 id="2-Modify-SSH-port"><a href="#2-Modify-SSH-port" class="headerlink" title="2. Modify SSH port"></a>2. Modify <strong>SSH</strong> port</h2><p>For security reasons, it is recommended to modify the port of <strong>SSH</strong>. I personally think this step is <strong>necessary</strong>, otherwise it will be very annoying to be tried to log in every day.</p>
 <p>Taking <strong>CentOS</strong> as an example, the system modification methods of different versions are slightly different.</p>
 <ul>
 <li><p>CentOS 7</p>
@@ -194,7 +195,7 @@
 </ol>
 </li>
 </ul>
-<h3 id="Install-Shadowsocks"><a href="#Install-Shadowsocks" class="headerlink" title="Install Shadowsocks"></a>Install Shadowsocks</h3><p>The one-click installation script is used here. It is recommended to create a directory similar to <code>install</code> for operation.</p>
+<h1 id="Install-Shadowsocks"><a href="#Install-Shadowsocks" class="headerlink" title="Install Shadowsocks"></a>Install Shadowsocks</h1><p>The one-click installation script is used here. It is recommended to create a directory similar to <code>install</code> for operation.</p>
 <ol>
 <li>Install wget first <code>yum -y install wget</code></li>
 <li>Install. <code>wget --no-check-certificate -O shadowsocks-libev.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-libev.sh</code></li>
@@ -216,7 +217,7 @@
 <li>Check the status: <code>/etc/init.d/shadowsocks status</code></li>
 <li>If you need to uninstall, execute: <code>./shadowsocks-libev.sh uninstall</code>. Note that it needs to be executed in the directory where the downloaded script is located.</li>
 </ol>
-<h3 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h3><p>Clients recommend using <a target="_blank" rel="noopener" href="https://github.com/shadowsocks/ShadowsocksX-NG/releases" title="ShadowsocksX-NG">ShadowsocksX-NG</a>.</p>
+<h1 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h1><p>Clients recommend using <a target="_blank" rel="noopener" href="https://github.com/shadowsocks/ShadowsocksX-NG/releases" title="ShadowsocksX-NG">ShadowsocksX-NG</a>.</p>
 <p>Note that when configuring, the <strong>ip</strong>, <strong>port</strong>, and <strong>encryption method</strong> must be consistent, especially the <strong>encryption method</strong>.</p>
 <p>If all goes well, you can start enjoying your own <strong>VPN</strong>.</p>
 
@@ -234,7 +235,7 @@
           </div>
           
             <div>
-              tags: 
+              tags: <ul class="TagsInline">
   <li class="meta-text">
   { <a href="/tags/VPS/">VPS</a> }
   </li>
@@ -247,7 +248,7 @@
   { <a href="/tags/Shadowsocks/">Shadowsocks</a> }
   </li>
 
-
+</ul>
             </div>
           
       </section>
@@ -262,19 +263,25 @@
         <div id="gitalk-container"></div>
 
         <script type="text/javascript">
-          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
-          var gitalk = new Gitalk({
-            clientID: '80bb2fb75b60505d4c6d',
-            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
-            repo: 'wangqingylw.github.io.comment', // 仓库地址
-            owner: 'wangqingylw', // github 用户名
-            admin: ["wangqingylw"], // github 用户名
-            perPage: 20,
-            id: '/2022/11/09/2022-11-Quickly-build-VPN-from-VPS/', // 查找 issus 的条件
-            title: 'Quickly build VPN from VPS',
-            body: 'https://www.ckqing.com/2022/11/09/2022-11-Quickly-build-VPN-from-VPS/ Quickly build VPN from VPS'
-          });
-          gitalk.render("gitalk-container");
+          var gitalkScript = document.getElementById('gitalk-script');
+
+          if (gitalkScript) {
+            gitalkScript.onload = function() {
+              /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+              var gitalk = new Gitalk({
+                clientID: '80bb2fb75b60505d4c6d',
+                clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+                repo: 'wangqingylw.github.io.comment', // 仓库地址
+                owner: 'wangqingylw', // github 用户名
+                admin: ["wangqingylw"], // github 用户名
+                perPage: 20,
+                id: '/2022/11/09/2022-11-Quickly-build-VPN-from-VPS/', // 查找 issus 的条件
+                title: 'Quickly build VPN from VPS',
+                body: 'https://www.ckqing.com/2022/11/09/2022-11-Quickly-build-VPN-from-VPS/ Quickly build VPN from VPS'
+              });
+              gitalk.render("gitalk-container");
+            };
+          }
         </script>
       </section>
     

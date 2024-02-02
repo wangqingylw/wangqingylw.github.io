@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="keywords" content="iOS,certificate">
+  <meta name="description" content="iOS证书介绍">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>iOS证书介绍 | ckqing.home</title>
   
-  <link rel="icon" href="/assets/favicon.jpeg">
+  <link rel="icon" href="/assets/favicon.jpg">
   
   
   
@@ -22,7 +23,7 @@
   <!-- Gitalk -->
   
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" id="gitalk-script"></script>
   
 
   
@@ -57,7 +58,7 @@
 <div class="Shell">
     <aside class='SideBar'>
     <section class='avatar' style="background-image: url()">
-        <div class='av-pic' style="background-image: url(/assets/avatar.jpeg); background-repeat: no-repeat; background-size: cover">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpg); background-repeat: no-repeat; background-size: cover">
         </div>
     </section>
     <section class='menu'>
@@ -68,45 +69,45 @@
         
         <ul>
           
-            <a href="/" class="Btn">
-              <li>Home</li>
-            </a>  
+            <li class="Btn">
+                <a href="/">Home</a>
+            </li>
           
-            <a href="/archives/" class="Btn">
-              <li>Archive</li>
-            </a>  
+            <li class="Btn">
+                <a href="/archives/">Archive</a>
+            </li>
           
-            <a href="/tags/" class="Btn">
-              <li>Tags</li>
-            </a>  
+            <li class="Btn">
+                <a href="/tags/">Tags</a>
+            </li>
           
-            <a href="/categories/" class="Btn">
-              <li>Categories</li>
-            </a>  
+            <li class="Btn">
+                <a href="/categories/">Categories</a>
+            </li>
           
-            <a href="/about/" class="Btn">
-              <li>About</li>
-            </a>  
+            <li class="Btn">
+                <a href="/about/">About</a>
+            </li>
           
         </ul>
     </section>
     <section class="media">
         
             
-                <a href="mailto:wq.cyan@gmail.com">
-                    <img src="/assets/email.svg" />
+                <a href="mailto:wq.cyan@gmail.com" aria-label="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" alt="email" />
                 </a>
             
         
             
-                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
-                    <img src="/assets/youtube.svg" />
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w" aria-label="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" alt="youtube" />
                 </a>
             
         
             
-                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662">
-                    <img src="/assets/bilibili.svg" />
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662" aria-label="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" alt="bilibili" />
                 </a>
             
         
@@ -157,7 +158,7 @@
 </div>
 
     <section>
-      <h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><ul>
+      <h1 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h1><ul>
 <li><p>数字签名</p>
 <ul>
 <li>代表一个特定的主体(签名者)对特定内容(被签名数据)的署名和认可</li>
@@ -409,7 +410,7 @@
 </ul>
 </li>
 </ul>
-<h2 id="代码签名"><a href="#代码签名" class="headerlink" title="代码签名"></a>代码签名</h2><ul>
+<h1 id="代码签名"><a href="#代码签名" class="headerlink" title="代码签名"></a>代码签名</h1><ul>
 <li><p>2008年苹果发布iOS2.0时引入了强制代码签名(Mandatory Code Signing)</p>
 <ul>
 <li>严格控制设备上能够运行的代码</li>
@@ -599,7 +600,7 @@
 </ul>
 </li>
 </ul>
-<h2 id="有关-APNs"><a href="#有关-APNs" class="headerlink" title="有关 APNs"></a>有关 APNs</h2><ul>
+<h1 id="有关-APNs"><a href="#有关-APNs" class="headerlink" title="有关 APNs"></a>有关 APNs</h1><ul>
 <li><p>Apple Push Notification service</p>
 </li>
 <li><p>苹果推送通知服务</p>
@@ -661,7 +662,7 @@
 <li><p>所以，一般APP在启动的时候必须请求<code>device token</code></p>
 </li>
 </ul>
-<h2 id="简单实地操作"><a href="#简单实地操作" class="headerlink" title="简单实地操作"></a>简单实地操作</h2><ul>
+<h1 id="简单实地操作"><a href="#简单实地操作" class="headerlink" title="简单实地操作"></a>简单实地操作</h1><ul>
 <li><p>Apple ID</p>
 <ul>
 <li>注册</li>
@@ -777,7 +778,7 @@
 <li><p>相关打包、上传等操作，可以通过 xcode 提供的命令行工具进行操作，可以手工指定各种参数、证书所在位置、证书ID等，方便的进行持续集成、自动化打包等工作。</p>
 </li>
 </ul>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
 <li><a target="_blank" rel="noopener" href="http://xelz.info/blog/2019/01/11/ios-code-signature/">深度长文：细说iOS代码签名</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/16fa56eacb5e">史上最用心的iOS App上架流程</a></li>
 <li><a target="_blank" rel="noopener" href="https://developer.apple.com/cn/support/certificates/">苹果-支持-证书</a></li>
@@ -803,7 +804,7 @@
           </div>
           
             <div>
-              tags: 
+              tags: <ul class="TagsInline">
   <li class="meta-text">
   { <a href="/tags/iOS/">iOS</a> }
   </li>
@@ -812,7 +813,7 @@
   { <a href="/tags/certificate/">certificate</a> }
   </li>
 
-
+</ul>
             </div>
           
       </section>
@@ -827,19 +828,25 @@
         <div id="gitalk-container"></div>
 
         <script type="text/javascript">
-          /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
-          var gitalk = new Gitalk({
-            clientID: '80bb2fb75b60505d4c6d',
-            clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
-            repo: 'wangqingylw.github.io.comment', // 仓库地址
-            owner: 'wangqingylw', // github 用户名
-            admin: ["wangqingylw"], // github 用户名
-            perPage: 20,
-            id: '/2019/06/30/ios-cer/', // 查找 issus 的条件
-            title: 'iOS证书介绍',
-            body: 'https://www.ckqing.com/2019/06/30/ios-cer/ iOS证书介绍'
-          });
-          gitalk.render("gitalk-container");
+          var gitalkScript = document.getElementById('gitalk-script');
+
+          if (gitalkScript) {
+            gitalkScript.onload = function() {
+              /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+              var gitalk = new Gitalk({
+                clientID: '80bb2fb75b60505d4c6d',
+                clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+                repo: 'wangqingylw.github.io.comment', // 仓库地址
+                owner: 'wangqingylw', // github 用户名
+                admin: ["wangqingylw"], // github 用户名
+                perPage: 20,
+                id: '/2019/06/30/ios-cer/', // 查找 issus 的条件
+                title: 'iOS证书介绍',
+                body: 'https://www.ckqing.com/2019/06/30/ios-cer/ iOS证书介绍'
+              });
+              gitalk.render("gitalk-container");
+            };
+          }
         </script>
       </section>
     
