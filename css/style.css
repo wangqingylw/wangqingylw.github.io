@@ -369,6 +369,8 @@ figure.highlight {
   width: 92%;
   margin: auto;
   overflow-x: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 .highlight > table {
   width: 100%;
@@ -489,6 +491,10 @@ blockquote {
 }
 .Tags a {
   border-bottom: none;
+}
+.TagsInline {
+  display: inline;
+  padding-inline: 0;
 }
 @media screen and (max-width: 1024px) {
   .container {
@@ -732,6 +738,11 @@ blockquote {
   background-color: #fff;
   background-size: 100%;
 }
+li.Btn {
+  list-style: none;
+  line-height: 1em;
+  margin: 2rem 0;
+}
 .Btn {
   border-bottom: none;
 }
@@ -753,6 +764,19 @@ blockquote {
   }
   a.Btn.active > li {
     border-right-color: #333;
+  }
+  li.Btn {
+    padding-right: 1em;
+    border-right: 3px #aaa solid;
+  }
+  li.Btn:hover {
+    border-right-color: #333;
+  }
+  li.Btn.active {
+    border-right-color: #333;
+  }
+  li.Btn > a {
+    border-bottom: none;
   }
 }
 @media screen and (max-width: 1024px) {
@@ -779,7 +803,8 @@ blockquote {
     margin: 0 auto;
     padding: 0;
   }
-  .Btn > li {
+  .Btn > li,
+  li.Btn {
     margin: 1em 0;
     padding: 0;
     flex: 1;
@@ -1001,3 +1026,8 @@ time {
 .link {
     text-decoration: underline
 }
+
+/* -- for test by wangqing28 --*/
+/* .gutter {
+    text-align: right;
+} */
