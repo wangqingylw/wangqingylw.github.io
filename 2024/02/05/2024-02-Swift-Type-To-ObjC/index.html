@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="keywords" content="iOS,Swift,Objective-C">
+  <meta name="description" content="针对 method cannot be marked @objc because the type of the parameter cannot be represented in objective-c 做简单梳理和总结">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Swift 方法桥接到 ObjC 时报 type cannot be represented | ckqing.home</title>
+  
+  <link rel="icon" href="/assets/favicon.jpg">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  <!-- Gitalk -->
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" id="gitalk-script"></script>
+  
+
+  
+
+  
+  <!-- Goole Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859880292446330" crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-43E779BM0G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-43E779BM0G');
+  </script>
+  
+
+  <!-- mermaid -->
+  
+    <script src="https://unpkg.com/mermaid@8.8.0/dist/mermaid.min.js"></script>
+    <script>
+    if (window.mermaid) {
+      mermaid.initialize({"startOnload":true,"theme":"default"});
+    }
+    </script>
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.jpg); background-repeat: no-repeat; background-size: cover">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>ckqing.home</div>
+        
+        
+            <div>Wang Qing</div>
+        
+        <ul>
+          
+            <li class="Btn">
+                <a href="/">Home</a>
+            </li>
+          
+            <li class="Btn">
+                <a href="/archives/">Archive</a>
+            </li>
+          
+            <li class="Btn">
+                <a href="/tags/">Tags</a>
+            </li>
+          
+            <li class="Btn">
+                <a href="/categories/">Categories</a>
+            </li>
+          
+            <li class="Btn">
+                <a href="/about/">About</a>
+            </li>
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a href="mailto:wq.cyan@gmail.com" aria-label="mailto:wq.cyan@gmail.com">
+                    <img src="/assets/email.svg" alt="email" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w" aria-label="https://www.youtube.com/channel/UCbxLA23tNs25YXY9jZJgq2w">
+                    <img src="/assets/youtube.svg" alt="youtube" />
+                </a>
+            
+        
+            
+                <a target="_blank" rel="noopener" href="https://space.bilibili.com/4380662" aria-label="https://space.bilibili.com/4380662">
+                    <img src="/assets/bilibili.svg" alt="bilibili" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Swift 方法桥接到 ObjC 时报 type cannot be represented</h1>
+    </header>
+    <div class='ListMeta'>
+  <time datetime="2024-02-05T07:17:46.000Z" itemprop="datePublished">
+    2024-02-05
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Swift/">Swift</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/tech/">tech</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/categories/tech/iOS/">iOS</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    <section>
+      <p>工程里 <code>Swift</code> 和 <code>Objective-C</code> 混编已经是常态，经常遇到 <code>Objective-C</code> 代码去调用 <code>Swift</code> 里的方法。最新的 <code>Swift</code> 需要手动标注 <code>@objc</code> 才能把方法暴露。（印象中似乎在 <code>Swift 2.x</code> 的时代，是默认暴露）</p>
+<p>但经常会遇到 <code>method cannot be marked @objc because the type of the parameter cannot be represented in objective-c</code> 类似的错误，直觉为参数、返回值，无法从 <code>Swift</code> 桥接到 <code>Objective-C</code>，有时候一眼就知道缺了什么，有时候则要思考半天，这里简单整理一下几种常见的情况。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>环境<br>Xcode 15.2<br>Swift 5.9</p>
+</blockquote>
+<h1 id="Swift-结构体-Struct"><a href="#Swift-结构体-Struct" class="headerlink" title="Swift 结构体(Struct)"></a>Swift 结构体(Struct)</h1><p>众所周知，<code>Swift</code> <strong>结构体</strong>和 <code>Objective-C</code> 的<strong>结构体</strong>是浑然不同的事物。 <code>Swift</code> 倾向于值类型，会更多使用 <code>Swift</code> 结构体，但需要暴露给 <code>Objective-C</code> 的时候，就不太方便了。但基础库里内置的结构体，比如 <code>CGPoint</code> 等，苹果帮我们做了桥接，是可以的。比如：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">ST</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> x: <span class="type">Int</span></span><br><span class="line">    <span class="keyword">var</span> y: <span class="type">Int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyCls</span>: <span class="title class_">NSObject</span> &#123; <span class="comment">// 🚩 NSObject is necessary, @objc is not necessary</span></span><br><span class="line">    <span class="keyword">var</span> x: <span class="type">Int</span> <span class="operator">=</span> <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> y: <span class="type">Int</span> <span class="operator">=</span> <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@objc</span> <span class="keyword">class</span> <span class="title class_">MyClass</span>: <span class="title class_">NSObject</span> &#123;</span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc</span>(<span class="params">st</span>: <span class="type">ST</span>) &#123; <span class="comment">// ❌ not ok</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc1</span>(<span class="params">st</span>: <span class="type">CGPoint</span>) &#123; <span class="comment">// ✅ ok</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc2</span>(<span class="params">st</span>: <span class="type">MyCls</span>) &#123; <span class="comment">// ✅ ok</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>苹果官方针对 <code>Swift</code> 中选择 <code>Class</code> 还是 <code>Structure</code> 有一段描述，见 <a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/swift/choosing-between-structures-and-classes">Choosing Between Structures and Classes</a>，其中一段节选：</p>
+<blockquote>
+<p><strong>Use Classes When You Need Objective-C Interoperability</strong><br>If you use an Objective-C API that needs to process your data, or you need to fit your data model into an existing class hierarchy defined in an Objective-C framework, you might need to use classes and class inheritance to model your data. For example, many Objective-C frameworks expose classes that you are expected to subclass.</p>
+</blockquote>
+<blockquote>
+<p> <strong>当您需要 Objective-C 互操作性时使用类(Class)</strong><br> 如果您使用需要处理数据的 Objective-C API，或者需要将数据模型放入 Objective-C 框架中定义的现有类层次结构中，则可能需要使用类和类继承来对数据进行建模。例如，许多 Objective-C 框架公开了您希望子类化的类。</p>
+</blockquote>
+<p>所以，遇到需要暴露给 <code>Objective-C</code> 的场景时，还是选择 <code>Class</code> 吧，或者用 <code>Class</code> 做一层封装。</p>
+<h1 id="Swift-枚举型-Enum"><a href="#Swift-枚举型-Enum" class="headerlink" title="Swift 枚举型(Enum)"></a>Swift 枚举型(Enum)</h1><p><code>Swift</code> 的枚举型很强大，除了能是 <code>Int</code>、<code>String</code> 之外，还能带参数。如果用了高级的特性，也是没法暴露给 <code>Objective-C</code>。如果想暴露给 <code>Objective-C</code>，需要满足 <code>Int</code> 类型且补充 <code>@objc</code> 前缀，当然如果非 <code>Int</code> 类型 <code>@objc</code> 也加不上。</p>
+<p>同时也正因为这个条件，此时带参枚举就无法使用了。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// @objc enum MyEnum: String // ❌ not ok，&#x27;@objc&#x27; enum raw type &#x27;String&#x27; is not an integer type</span></span><br><span class="line"><span class="comment">// enum MyEnum // ❌ not ok</span></span><br><span class="line"><span class="comment">// enum MyEnum: Int // ❌ not ok</span></span><br><span class="line"><span class="keyword">@objc</span> <span class="keyword">enum</span> <span class="title class_">MyEnum</span>: <span class="title class_">Int</span> &#123; <span class="comment">// ✅ ok</span></span><br><span class="line">  <span class="keyword">case</span> <span class="type">A</span></span><br><span class="line">  <span class="keyword">case</span> <span class="type">B</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@objc</span> <span class="keyword">class</span> <span class="title class_">MyClass</span>: <span class="title class_">NSObject</span> &#123;</span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc</span>(<span class="params">st</span>: <span class="type">MyEnum</span>) &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Swift-基础数据类型-Int、Bool-可选类型-Optional"><a href="#Swift-基础数据类型-Int、Bool-可选类型-Optional" class="headerlink" title="Swift 基础数据类型(Int、Bool) + 可选类型(Optional)"></a>Swift 基础数据类型(Int、Bool) + 可选类型(Optional)</h1><p><code>Swift</code> 的可选类型(Optional)，有时候也会影响暴露给 <code>Objective-C</code>，对于继承自 <code>NSObject</code> 的 <strong>引用类型</strong>，加上可选类型是没问题的，毕竟 <code>Objective-C</code> 也有 <code>nil</code> 来承接，但基础值类型，如 <code>Int</code>、<code>Bool</code> 就没法将对应的可选类型 <code>Int?</code>、<code>Bool?</code> 暴露给 <code>Objective-C</code> 了。</p>
+<p>此时可以考虑去除可选类型，或者改用 <code>NSNumber</code> 类。根据是否是可选类型，<code>Objective-C</code> 侧展现的则是分别带有 <code>_Nonnull</code> 和 <code>_Nullable</code> 标识的入参。虽然如果对不上，默认是 <code>warning</code>，不过建议还是开启 <code>error</code>，并严格按照标识去处理，这同时也教育我们，<code>Objective-C</code> 侧对于是否可以为 <code>nil</code> 的标识也要做到严谨规范，才能更好的和 <code>Swift</code> 交互。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@objc</span> <span class="keyword">class</span> <span class="title class_">MyClass</span>: <span class="title class_">NSObject</span> &#123;</span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc</span>(<span class="params">st</span>: <span class="type">Bool</span>) &#123; <span class="comment">// ✅ ok in Objective-C is BOOL</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc1</span>(<span class="params">st</span>: <span class="type">Int</span>) &#123; <span class="comment">// ✅ ok in Objective-C is NSInteger</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc2</span>(<span class="params">st</span>: <span class="type">Bool</span>?) &#123; <span class="comment">// ❌ not ok</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc2</span>(<span class="params">st</span>: <span class="type">Int</span>?) &#123; <span class="comment">// ❌ not ok</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc2</span>(<span class="params">st</span>: <span class="type">NSNumber</span>) &#123; <span class="comment">// ✅ ok in Objective-C is NSNumber * _Nonnull</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc2</span>(<span class="params">st</span>: <span class="type">NSNumber</span>?) &#123; <span class="comment">// ✅ ok in Objective-C is NSNumber * _Nullable</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="inout"><a href="#inout" class="headerlink" title="inout"></a>inout</h1><p><code>Swift</code> 里提供了 <code>inout</code> 标识，对入参的修改能够返回给调用方，如果带了 <code>inout</code> 则不能暴露给 <code>Objective-C</code>，可选的替代方案是使用 <code>UnsafeMutablePointer</code>。当然自己封装成一个对象类型也是可以的。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@objc</span> <span class="keyword">class</span> <span class="title class_">MyClass</span>: <span class="title class_">NSObject</span> &#123;</span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc</span>(<span class="params">st</span>: <span class="keyword">inout</span> <span class="type">Bool</span>) &#123; <span class="comment">// ❌ not ok</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// in Objective-C is BOOL * _Nonnull</span></span><br><span class="line">    <span class="comment">// usage:</span></span><br><span class="line">    <span class="comment">//    BOOL st = NO;</span></span><br><span class="line">    <span class="comment">//    [[MyClass alloc] init] myFuncWithSt:&amp;st];</span></span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">mFunc</span>(<span class="params">st</span>: <span class="type">UnsafeMutablePointer</span>&lt;<span class="type">Bool</span>&gt;) &#123; <span class="comment">// ✅ ok</span></span><br><span class="line">        <span class="comment">// do something ...</span></span><br><span class="line">        st.pointee <span class="operator">=</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="数组-Array"><a href="#数组-Array" class="headerlink" title="数组 Array"></a>数组 Array</h1><p>上文提到 <code>Int</code> 会被桥接成 <code>NSInteger</code>，但需要注意的是 <code>[Int]</code> 会被桥接成 <code>NSArray&lt;NSNumber *&gt;</code>，使用的时候务必注意。</p>
+<p>但能够被苹果桥接的都是苹果提供的基础类型，如果是自定义的 <code>Swift</code> 的 <code>Struct</code> 则不行。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">ST</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> x: <span class="type">Int</span></span><br><span class="line">    <span class="keyword">var</span> y: <span class="type">Int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@objc</span> <span class="keyword">class</span> <span class="title class_">MyClass</span>: <span class="title class_">NSObject</span> &#123;</span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc</span>(<span class="params">st</span>: [<span class="type">ST</span>]) &#123; <span class="comment">// ❌ not ok</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc</span>(<span class="params">st</span>: [<span class="type">Int</span>]) &#123; <span class="comment">// ✅ ok in Objective-C is NSArray&lt;NSNumber *&gt; * _Nonnull</span></span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="async"><a href="#async" class="headerlink" title="async"></a>async</h1><p>题外话，如果用到了 <code>Swift</code> 异步编程里的 <code>async</code> 等特性，其实也是可以正常暴露给 <code>Objective-C</code> 的，只不过会附带一个回调的 <code>handler</code>，比如：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@objc</span> <span class="keyword">class</span> <span class="title class_">MyClass</span>: <span class="title class_">NSObject</span> &#123;</span><br><span class="line">    <span class="comment">// ✅ ok ObjC is</span></span><br><span class="line">    <span class="comment">// - (void)myFuncWithSt:(NSNumber * _Nonnull)st completionHandler:(void (^ _Nonnull)(void))completionHandler;</span></span><br><span class="line">    <span class="keyword">@objc</span> <span class="keyword">func</span> <span class="title function_">myFunc</span>(<span class="params">st</span>: <span class="type">NSNumber</span>) <span class="keyword">async</span> &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>总体来说，<code>Swift</code> 自身复杂的语法特性，导致部分无法暴露给 <code>Objective-C</code>。此时遇到类似 <code>method cannot be marked @objc because the type of the parameter cannot be represented in objective-c</code> 的报错，可以先排查下，是否是 <code>Swift</code> 特有的特性，比如 <code>Swift</code> 结构体、枚举型，并尝试补充 <code>@objc</code> 等标识。如果遇到困境，可以思考下，如果能暴露给 <code>Objective-C</code>，在  <code>Objective-C</code> 那边应该是个什么形式，如果无法得出合理的结论，那应该就是问题所在了。</p>
+<p>这里仅列出了常见部分情况，其他情况如果想到了再补充进来。</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            Published on&nbsp;
+            <time datetime="2024-02-05T07:17:46.000Z" itemprop="datePublished">
+              2024-02-05
+            </time>
+          </div>
+          
+            <div>
+              tags: <ul class="TagsInline">
+  <li class="meta-text">
+  { <a href="/tags/iOS/">iOS</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Swift/">Swift</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/Objective-C/">Objective-C</a> }
+  </li>
+
+</ul>
+            </div>
+          
+      </section>
+    
+
+    <!-- disqus -->
+    
+
+    <!-- gitalk -->
+    
+      <section>
+        <div id="gitalk-container"></div>
+
+        <script type="text/javascript">
+          var gitalkScript = document.getElementById('gitalk-script');
+
+          if (gitalkScript) {
+            gitalkScript.onload = function() {
+              /* 这里不能依赖任何 js 逻辑，比如 window.location，是非常不准确的，一切改用变量 */
+              var gitalk = new Gitalk({
+                clientID: '80bb2fb75b60505d4c6d',
+                clientSecret: '892409c79a3f576897b2e5bb198b13d73102fc64',
+                repo: 'wangqingylw.github.io.comment', // 仓库地址
+                owner: 'wangqingylw', // github 用户名
+                admin: ["wangqingylw"], // github 用户名
+                perPage: 20,
+                id: '/2024/02/05/2024-02-Swift-Type-To-ObjC/', // 查找 issus 的条件
+                title: 'Swift 方法桥接到 ObjC 时报 type cannot be represented',
+                body: 'https://www.ckqing.com/2024/02/05/2024-02-Swift-Type-To-ObjC/ Swift 方法桥接到 ObjC 时报 type cannot be represented'
+              });
+              gitalk.render("gitalk-container");
+            };
+          }
+        </script>
+      </section>
+    
+
+    
+      <script>
+        /* 这里手工调一下 mermaid 的 init，否则懒加载场景不生效 */
+        if (window.mermaid) {
+          window.mermaid.init();
+        }
+      </script>
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2024 - Wang Qing </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+<!-- Temporarily block singlepager -->
+<!-- 
+<script src="/js/pager/dist/singlepager.js"></script>
+ -->
+<!-- <script>
+var sp = new Pager('data-pager-shell')
+</script> -->
+</body>
+</html>

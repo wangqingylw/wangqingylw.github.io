@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="keywords" content="ObjC,didSet,SIL,ChatGPT">
+  <meta name="keywords" content="Objective-C,didSet,SIL,ChatGPT">
   <meta name="description" content="针对 Swift 开发终于到的构造函数中是否触发属性观察器(didSet)问题进行深入分析">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Swift构造函数(init)与属性观察器(didSet) | ckqing.home</title>
@@ -158,24 +158,24 @@
 </div>
 
     <section>
-      <p>最近工程里 <code>Swift</code> 和 <code>ObjC</code> 混编的场景越来越多了，大家在编写 <code>Swift</code> 代码时，一般都会用 <code>didSet</code> 来作为 <code>ObjC</code> 里 <code>setter</code> 的替代。但最近遇到好几起（自己和其他同事）因为 <code>Swift</code> 中 <code>init</code> 里对属性赋值没有触发 <code>didSet</code>，进而导致结果不符合预期的问题，看来还是对 <code>Swift</code> 使用不熟练，这里稍微汇总下。（另外，末尾会附上 <code>ChatGPT3.5</code> 的回答情况）</p>
+      <p>最近工程里 <code>Swift</code> 和 <code>Objective-C</code> 混编的场景越来越多了，大家在编写 <code>Swift</code> 代码时，一般都会用 <code>didSet</code> 来作为 <code>Objective-C</code> 里 <code>setter</code> 的替代。但最近遇到好几起（自己和其他同事）因为 <code>Swift</code> 中 <code>init</code> 里对属性赋值没有触发 <code>didSet</code>，进而导致结果不符合预期的问题，看来还是对 <code>Swift</code> 使用不熟练，这里稍微汇总下。（另外，末尾会附上 <code>ChatGPT3.5</code> 的回答情况）</p>
 <span id="more"></span>
 
 <blockquote>
 <p>环境<br>Xcode 15.2<br>Swift 5.9</p>
 </blockquote>
-<h1 id="有关属性赋值"><a href="#有关属性赋值" class="headerlink" title="有关属性赋值"></a>有关属性赋值</h1><p>大家都很熟悉 <code>ObjC</code> 里对属性赋值，一般有2种，一种是<code>点操作符</code>（即 <code>a.x = 1</code>），一种是直接对成员变量 <code>ivar</code> 赋值（即 <code>_x = 1</code>）。</p>
+<h1 id="有关属性赋值"><a href="#有关属性赋值" class="headerlink" title="有关属性赋值"></a>有关属性赋值</h1><p>大家都很熟悉 <code>Objective-C</code> 里对属性赋值，一般有2种，一种是<code>点操作符</code>（即 <code>a.x = 1</code>），一种是直接对成员变量 <code>ivar</code> 赋值（即 <code>_x = 1</code>）。</p>
 <p>大家都很熟悉 <code>@property = ivar + setter + getter</code>，而<code>点操作符</code>实际是<code>setter/getter</code>的语法糖。</p>
 <p>进而有常见的初级面试题：</p>
 <blockquote>
 <p>在构造函数里，对属性赋值，对使用点操作符有什么建议？</p>
 </blockquote>
 <p>答案并不固定，基本言之成理即可，无外乎「尽量少用，因为可能会在初始化完成之前，触发不必要的<code>setter</code>，而其中可能有不确定的逻辑，带来风险」，「如果能明确<code>setter</code>的逻辑，并且期望将部分逻辑收敛至<code>setter</code>内，也是可以使用的，但要留意风险」，基本言之有理即可。</p>
-<p>那进入 <code>Swift</code> 时代，在做代码迁移，或者开发过程中，会使用 <code>willSet/didSet</code> 来作为 <code>ObjC</code> 时代 <code>setter</code> 的替代。</p>
+<p>那进入 <code>Swift</code> 时代，在做代码迁移，或者开发过程中，会使用 <code>willSet/didSet</code> 来作为 <code>Objective-C</code> 时代 <code>setter</code> 的替代。</p>
 <p>比如：</p>
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Swift</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyClass</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> myProperty: <span class="type">String</span> &#123;</span><br><span class="line">        <span class="keyword">didSet</span> &#123;</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;Property has been set.&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>但是 <code>Swift</code> 里并没有区分 <code>点操作符</code> 和 <code>成员变量直接赋值</code> 2种逻辑，即使不显示标注 <code>self</code> 也是相同的逻辑，所以大家倾向于统一当做都是类似 <code>ObjC</code> 的 <code>点操作符</code>，即 <code>setter</code> 方法。</p>
+<p>但是 <code>Swift</code> 里并没有区分 <code>点操作符</code> 和 <code>成员变量直接赋值</code> 2种逻辑，即使不显示标注 <code>self</code> 也是相同的逻辑，所以大家倾向于统一当做都是类似 <code>Objective-C</code> 的 <code>点操作符</code>，即 <code>setter</code> 方法。</p>
 <p>然而事实上在<code>默认值</code>、构造函数（<code>init</code>）等场景下，其实是 <strong>不会触发</strong> <code>didSet</code> 等方法的，有些同学是完全不知道，有些同学是知道，但经常想不起来。</p>
 <h1 id="苹果的解释"><a href="#苹果的解释" class="headerlink" title="苹果的解释"></a>苹果的解释</h1><p>先看看苹果官方的描述，有2段来源，一段是关于<code>属性/(properties)</code>的描述，另一段是关于<code>构造函数</code>的描述。</p>
 <p><a target="_blank" rel="noopener" href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/properties/">The Swift Programming Language (5.9.2)&#x2F;Properties</a></p>
